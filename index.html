@@ -9,9 +9,7 @@
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
 
-  html, body {
-    height: 100%;
-  }
+  html, body { height: 100%; }
 
   body {
     background:#111214;
@@ -24,181 +22,191 @@
     min-height: 100dvh;
     background:#111214;
     padding: clamp(20px, 4vw, 55px) clamp(20px, 6vw, 70px);
-    display:grid;
-    grid-template-columns: 1fr 1.05fr;
-    grid-template-rows: auto 1fr auto;
-    column-gap: clamp(20px, 3vw, 40px);
+    display:flex;
+    flex-direction:column;
     position: relative;
-    overflow:hidden;
   }
 
-  /* Top bar */
+  /* ---------- Top bar ---------- */
   .header {
-    grid-column: 1 / 3;
-    grid-row: 1 / 2;
     display:flex;
-    justify-content:space-between;
+    justify-content:flex-end;
     align-items:flex-start;
     z-index:3;
-    padding-top: clamp(4px, 1vh, 10px);
+    padding-bottom: clamp(24px, 4vh, 40px);
+    gap: 10px;
   }
 
-  .logo {
-    font-weight:700;
-    letter-spacing:2px;
-    font-size: clamp(13px, 1.4vw, 15px);
-    color:#f2f2f2;
-  }
 
-  .logo-wrap {
+  .top-right {
     display:flex;
     align-items:center;
-    gap:12px;
+    gap: clamp(10px, 2vw, 26px);
+    flex-wrap: wrap;
+    justify-content:flex-end;
   }
 
-  .avatar {
-    display:none;
-    width:36px;
-    height:36px;
+  .quick-nav {
+    display:flex;
+    align-items:center;
+    gap: clamp(10px, 1.6vw, 20px);
+    flex-wrap: wrap;
+    justify-content:flex-end;
+  }
+
+  .quick-nav a {
+    font-size: clamp(10px, 1vw, 12.5px);
+    letter-spacing:0.4px;
+    color:#9fa0a4;
+    text-decoration:none;
+    font-weight:500;
+    white-space:nowrap;
+    transition: color .2s ease;
+  }
+  .quick-nav a:hover { color:#ffffff; }
+  .quick-nav a.active { color:#ffffff; }
+
+  /* Hamburger menu */
+  .menu-wrap { position: relative; display:flex; align-items:center; }
+
+  .menu-toggle {
+    display:flex; flex-direction:column; justify-content:center;
+    gap:5px; width:22px; height:16px; background:none; border:none;
+    cursor:pointer; padding:0; flex-shrink:0;
+  }
+  .menu-toggle span {
+    display:block; height:2px; width:100%; background:#cfd0d2;
+    transition: transform .25s ease, opacity .2s ease, background .2s ease;
+  }
+  .menu-toggle:hover span { background:#ffffff; }
+  .menu-wrap.open .menu-toggle span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .menu-wrap.open .menu-toggle span:nth-child(2) { opacity:0; }
+  .menu-wrap.open .menu-toggle span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  .menu-dropdown {
+    position:absolute; top: calc(100% + 18px); right:0;
+    background:#17181b; border:1px solid #2a2b2f; border-radius:6px;
+    padding: 10px 0; min-width:170px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    opacity:0; visibility:hidden; transform: translateY(-8px);
+    transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
+    z-index: 50;
+  }
+  .menu-wrap.open .menu-dropdown { opacity:1; visibility:visible; transform: translateY(0); }
+
+  .menu-dropdown a {
+    display:block; padding: 10px 22px; font-size:13px; letter-spacing:0.5px;
+    color:#c7c8ca; text-decoration:none; font-weight:500;
+    transition: background .15s ease, color .15s ease;
+  }
+  .menu-dropdown a:hover { background:#232428; color:#ffffff; }
+  .menu-dropdown a.active { color:#ffffff; background:#1e1f23; }
+
+  /* ---------- Hero: foto + texto ---------- */
+  .hero {
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: clamp(30px, 5vw, 70px);
+  }
+
+  .hero-text {
+    max-width: 560px;
+    z-index:2;
+  }
+
+  .hero-greet {
+    font-size: clamp(12px, 1.2vw, 14px);
+    color:#8b8c91;
+    font-weight:500;
+    margin-bottom: 8px;
+  }
+
+  .hero-name {
+    font-family:'Poppins',sans-serif;
+    font-weight:800;
+    font-size: clamp(30px, 4.6vw, 52px);
+    color:#f5f5f5;
+    line-height:1.1;
+    margin-bottom: 14px;
+  }
+
+  .hero-tagline {
+    display:inline-block;
+    font-size: clamp(11px, 1vw, 12.5px);
+    color:#111214;
+    background:#e4e4e6;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight:600;
+    letter-spacing:0.3px;
+    margin-bottom: 18px;
+  }
+
+  .hero-desc {
+    font-size: clamp(12.5px, 1vw, 14.5px);
+    line-height:1.9;
+    color:#9fa0a4;
+    max-width: 480px;
+    font-weight:400;
+  }
+
+  .hero-desc p { margin-bottom: 14px; }
+  .hero-desc p:last-child { margin-bottom: 0; }
+  .hero-desc b { color:#c7c8ca; font-weight:600; }
+
+  .hero-photo-wrap {
+    flex-shrink:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap: 14px;
+    z-index:2;
+  }
+
+  .hero-photo-ring {
+    width: clamp(180px, 22vw, 300px);
+    height: clamp(180px, 22vw, 300px);
+    border-radius:50%;
+    padding: 6px;
+    border: 1px solid #2e2f34;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .hero-photo-ring img {
+    width:100%;
+    height:100%;
     border-radius:50%;
     object-fit:cover;
     object-position: center top;
     filter: grayscale(100%) contrast(1.05);
-    border:1px solid #3a3b40;
+    background:#1c1d20;
   }
 
-  .top-menu {
-    display:flex;
-    align-items:flex-start;
-  }
-
-  /* Hamburger menu */
-  .menu-wrap {
-    position: relative;
+  .hero-location {
     display:flex;
     align-items:center;
-  }
-
-  .menu-toggle {
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    gap:5px;
-    width:22px;
-    height:16px;
-    background:none;
-    border:none;
-    cursor:pointer;
-    padding:0;
-  }
-
-  .menu-toggle span {
-    display:block;
-    height:2px;
-    width:100%;
-    background:#cfd0d2;
-    transition: transform .25s ease, opacity .2s ease, background .2s ease;
-  }
-
-  .menu-toggle:hover span { background:#ffffff; }
-
-  .menu-wrap.open .menu-toggle span:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
-  }
-  .menu-wrap.open .menu-toggle span:nth-child(2) {
-    opacity:0;
-  }
-  .menu-wrap.open .menu-toggle span:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg);
-  }
-
-  .menu-dropdown {
-    position:absolute;
-    top: calc(100% + 18px);
-    right:0;
+    gap:6px;
+    font-size: clamp(10.5px, 0.95vw, 12px);
+    color:#9fa0a4;
     background:#17181b;
     border:1px solid #2a2b2f;
-    border-radius:6px;
-    padding: 10px 0;
-    min-width:170px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-    opacity:0;
-    visibility:hidden;
-    transform: translateY(-8px);
-    transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
-    z-index: 50;
+    padding: 6px 14px;
+    border-radius:20px;
   }
+  .hero-location i { color:#7a7b80; font-size:11px; }
 
-  .menu-wrap.open .menu-dropdown {
-    opacity:1;
-    visibility:visible;
-    transform: translateY(0);
-  }
-
-  .menu-dropdown a {
-    display:block;
-    padding: 10px 22px;
-    font-size:13px;
-    letter-spacing:0.5px;
-    color:#c7c8ca;
-    text-decoration:none;
-    font-weight:500;
-    transition: background .15s ease, color .15s ease;
-  }
-
-  .menu-dropdown a:hover {
-    background:#232428;
-    color:#ffffff;
-  }
-
-  .menu-dropdown a.active {
-    color:#ffffff;
-    background:#1e1f23;
-  }
-
-  /* Middle content */
-  .content {
-    grid-column: 1 / 2;
-    grid-row: 2 / 3;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    padding-right: clamp(0px, 2vw, 30px);
-    z-index:2;
-    max-width: 620px;
-  }
-
-  .hello {
-    font-family:'Poppins',sans-serif;
-    font-weight:800;
-    font-size: clamp(38px, 6vw, 78px);
-    color:#f5f5f5;
-    line-height:1;
-    margin-bottom: clamp(16px, 2.5vh, 30px);
-  }
-
-  .desc {
-    font-size: clamp(12.5px, 1vw, 15px);
-    line-height:1.9;
-    color:#9fa0a4;
-    max-width: 420px;
-    font-weight:400;
-  }
-
-  .desc p { margin-bottom: 14px; }
-  .desc p:last-child { margin-bottom: 0; }
-  .desc b { color:#c7c8ca; font-weight:600; }
-
-  /* Footer: contacts + year */
+  /* ---------- Footer ---------- */
   .footer {
-    grid-column: 1 / 2;
-    grid-row: 3 / 4;
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
     text-align:center;
-    padding-top: clamp(14px, 3vh, 24px);
+    padding-top: clamp(24px, 4vh, 36px);
     padding-bottom: clamp(4px, 1vh, 10px);
     z-index:2;
   }
@@ -218,74 +226,32 @@
     font-size:17px;
     margin-bottom: 14px;
   }
-  .footer-icons a {
-    color:#cfd0d2;
-    opacity:0.85;
-    text-decoration:none;
-    transition: opacity .2s, color .2s;
-  }
+  .footer-icons a { color:#cfd0d2; opacity:0.85; text-decoration:none; transition: opacity .2s, color .2s; }
   .footer-icons a:hover { opacity:1; color:#ffffff; }
 
-  .footer-year {
-    font-size:11px;
-    letter-spacing:1px;
-    color:#5f6065;
-    font-weight:400;
-  }
-
-  /* Right image */
-  .portrait {
-    grid-column: 2 / 3;
-    grid-row: 1 / 4;
-    position:relative;
-    height: 100%;
-    width: 100%;
-    overflow:hidden;
-  }
-
-  .portrait img {
-    position:absolute;
-    inset:0;
-    height: 100%;
-    width:100%;
-    object-fit:cover;
-    object-position: center top;
-    filter: grayscale(100%) contrast(1.05);
-    -webkit-mask-image: linear-gradient(to right, transparent, black 12%);
-    mask-image: linear-gradient(to right, transparent, black 12%);
-  }
-
-  /* Right side dash nav */
-  .dashnav {
-    position:absolute;
-    right: clamp(10px, 2vw, 30px);
-    top:50%;
-    transform: translateY(-50%);
-    display:flex;
-    flex-direction:column;
-    gap:14px;
-    z-index:2;
-  }
-
-  .dashnav span {
-    width: 26px;
-    height:2px;
-    background:#6a6c72;
-    display:block;
-  }
-  .dashnav span:first-child { background:#e6e6e6; width:34px; }
+  .footer-year { font-size:11px; letter-spacing:1px; color:#5f6065; font-weight:400; }
 
   @media (max-width: 760px) {
-    .card {
-      grid-template-columns: 1fr;
-      grid-template-rows: auto 1fr auto;
-      padding: 24px 24px;
-    }
-    .portrait { display:none; }
-    .content { grid-column: 1/2; padding-right:0; max-width:none; }
-    .footer { grid-column: 1/2; grid-row: 3/4; }
+    .card { padding: 24px 24px; }
     .menu-dropdown { right:0; left:auto; }
-    .avatar { display:block; }
+
+    .hero {
+      flex-direction: column-reverse;
+      text-align:center;
+      gap: 22px;
+      justify-content:center;
+    }
+    .hero-text { max-width:none; }
+    .hero-desc { max-width:none; margin: 0 auto; }
+    .hero-photo-ring { width: 140px; height:140px; }
+
+    .quick-nav a { font-size: 10px; }
+    .quick-nav { gap: 8px; }
+  }
+
+  @media (max-width: 380px) {
+    .quick-nav a { font-size: 9px; }
+    .quick-nav { gap: 6px; }
   }
 
   @media (min-width: 1400px) {
@@ -297,11 +263,14 @@
 
   <div class="card">
     <div class="header">
-      <div class="logo-wrap">
-        <img class="avatar" src="avatar.png" alt="Odêncio Hermínio Maculuve">
-        <div class="logo">MACULUVE</div>
-      </div>
-      <div class="top-menu">
+      <div class="top-right">
+        <nav class="quick-nav">
+          <a href="index.html" class="active">Home</a>
+          <a href="publicacoes.html">Publicações</a>
+          <a href="projetos.html">Projetos</a>
+          <a href="contactos.html">Contactos</a>
+        </nav>
+
         <div class="menu-wrap" id="menuWrap">
           <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false">
             <span></span><span></span><span></span>
@@ -318,12 +287,25 @@
       </div>
     </div>
 
-    <div class="content">
-      <h1 class="hello">Olá</h1>
-      <div class="desc">
-        <p>Meu nome é <b>Odêncio Hermínio Maculuve</b>, estudante de engenharia e empreendedor apaixonado por construir coisas que geram impacto real.</p>
-        <p>Sou fundador da <b>Royalty</b> e de outros projetos sob a <b>Maculuve Investment</b>, onde transformo ideias em produtos com qualidade, propósito e visão de crescimento.</p>
-        <p>Movido pela curiosidade e disciplina, alio minha formação técnica a uma mentalidade empreendedora para desenvolver projetos inovadores, únicos e feitos para durar.</p>
+    <div class="hero">
+      <div class="hero-text">
+        <div class="hero-greet">Olá, o meu nome é</div>
+        <h1 class="hero-name" id="heroNome">Odêncio Hermínio Maculuve</h1>
+        <div class="hero-tagline" id="heroTagline">Estudante de Engenharia · Empreendedor</div>
+        <div class="hero-desc" id="heroDesc">
+          <p>Meu nome é <b>Odêncio Hermínio Maculuve</b>, estudante de engenharia e empreendedor apaixonado por construir coisas que geram impacto real.</p>
+          <p>Sou fundador da <b>Royalty</b> e de outros projetos sob a <b>Maculuve Investment</b>, onde transformo ideias em produtos com qualidade, propósito e visão de crescimento.</p>
+        </div>
+      </div>
+
+      <div class="hero-photo-wrap">
+        <div class="hero-photo-ring">
+          <img id="heroFoto" alt="Odêncio Hermínio Maculuve" style="display:none;">
+        </div>
+        <div class="hero-location" id="heroLocation" style="display:none;">
+          <i class="fa-solid fa-location-dot"></i>
+          <span id="heroLocationText"></span>
+        </div>
       </div>
     </div>
 
@@ -337,13 +319,6 @@
         <a href="mailto:odencmaculuve@gmail.com" title="E-mail"><i class="fa-solid fa-envelope"></i></a>
       </div>
       <div class="footer-year" id="footerYear"></div>
-    </div>
-
-    <div class="portrait">
-      <img src="man.png" alt="Odêncio Hermínio Maculuve">
-      <div class="dashnav">
-        <span></span><span></span><span></span><span></span>
-      </div>
     </div>
   </div>
 
@@ -369,29 +344,13 @@
     document.getElementById('footerYear').textContent = '© ' + new Date().getFullYear();
 
     // ---------- Ícones do rodapé, dinâmicos a partir do Supabase ----------
-    const ICONES = {
-      whatsapp: 'fa-brands fa-whatsapp',
-      instagram: 'fa-brands fa-instagram',
-      tiktok: 'fa-brands fa-tiktok',
-      facebook: 'fa-brands fa-facebook',
-      email: 'fa-solid fa-envelope'
-    };
-    const NOMES = {
-      whatsapp: 'WhatsApp',
-      instagram: 'Instagram',
-      tiktok: 'TikTok',
-      facebook: 'Facebook',
-      email: 'E-mail'
-    };
+    const ICONES = { whatsapp:'fa-brands fa-whatsapp', instagram:'fa-brands fa-instagram', tiktok:'fa-brands fa-tiktok', facebook:'fa-brands fa-facebook', email:'fa-solid fa-envelope' };
+    const NOMES = { whatsapp:'WhatsApp', instagram:'Instagram', tiktok:'TikTok', facebook:'Facebook', email:'E-mail' };
 
     async function carregarFooterIcons() {
       try {
         const { data, error } = await window.supabaseClient
-          .from('contactos')
-          .select('plataforma, valor, ordem')
-          .eq('ativo', true)
-          .order('ordem', { ascending: true });
-
+          .from('contactos').select('plataforma, valor, ordem').eq('ativo', true).order('ordem', { ascending: true });
         if (error) throw error;
         if (data && data.length > 0) {
           const wrap = document.getElementById('footerIcons');
@@ -402,12 +361,43 @@
             return `<a href="${href}" target="_blank" title="${nome}"><i class="${icone}"></i></a>`;
           }).join('');
         }
+      } catch (err) { console.warn('Não foi possível carregar contactos.', err); }
+    }
+    carregarFooterIcons();
+
+    // ---------- Conteúdo "Sobre mim" (usado também no hero da Home) ----------
+    async function carregarHero() {
+      try {
+        const { data, error } = await window.supabaseClient
+          .from('sobre_mim').select('*').limit(1).maybeSingle();
+        if (error || !data) return;
+
+        if (data.foto_url) {
+          const heroFoto = document.getElementById('heroFoto');
+          heroFoto.src = data.foto_url;
+          heroFoto.style.display = 'block';
+        }
+        if (data.tagline) {
+          document.getElementById('heroTagline').textContent = data.tagline;
+        }
+        if (data.localizacao) {
+          document.getElementById('heroLocationText').textContent = data.localizacao;
+          document.getElementById('heroLocation').style.display = 'flex';
+        }
+        if (data.conteudo) {
+          // usa só o primeiro parágrafo no resumo da Home, para não repetir tudo do Sobre mim
+          const div = document.createElement('div');
+          div.innerHTML = data.conteudo;
+          const primeiroParagrafo = div.querySelector('p');
+          if (primeiroParagrafo) {
+            document.getElementById('heroDesc').innerHTML = primeiroParagrafo.outerHTML;
+          }
+        }
       } catch (err) {
-        console.warn('Não foi possível carregar contactos do Supabase, a mostrar ícones padrão.', err);
+        console.warn('Não foi possível carregar o Sobre mim para a Home.', err);
       }
     }
-
-    carregarFooterIcons();
+    carregarHero();
   </script>
 </body>
 </html>

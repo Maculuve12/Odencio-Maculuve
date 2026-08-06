@@ -263,8 +263,22 @@
     <!-- ---------- SOBRE MIM ---------- -->
     <div class="panel active" id="panel-sobre">
       <h2>Sobre mim</h2>
-      <div class="panel-sub">Este texto aparece na página "Sobre mim". Pode usar HTML simples (ex: &lt;p&gt;, &lt;b&gt;).</div>
+      <div class="panel-sub">Este texto aparece na página "Sobre mim" e no topo da Home. Pode usar HTML simples (ex: &lt;p&gt;, &lt;b&gt;).</div>
       <div class="card-box">
+        <div class="field">
+          <label>Foto de perfil (link direto — usada no topo da Home)</label>
+          <input type="text" id="sobreFotoUrl" placeholder="https://...">
+        </div>
+        <div class="row-flex">
+          <div class="field">
+            <label>Tagline (etiqueta curta)</label>
+            <input type="text" id="sobreTagline" placeholder="Ex: Estudante de Engenharia · Empreendedor">
+          </div>
+          <div class="field">
+            <label>Localização</label>
+            <input type="text" id="sobreLocalizacao" placeholder="Ex: Nampula, Moçambique">
+          </div>
+        </div>
         <div class="field">
           <label>Conteúdo (parágrafos em HTML)</label>
           <textarea id="sobreConteudo" style="min-height:220px;"></textarea>
@@ -501,16 +515,22 @@
       const { data, error } = await sb().from('sobre_mim').select('*').limit(1).maybeSingle();
       if (error || !data) return;
       sobreId = data.id;
+      document.getElementById('sobreFotoUrl').value = data.foto_url || '';
+      document.getElementById('sobreTagline').value = data.tagline || '';
+      document.getElementById('sobreLocalizacao').value = data.localizacao || '';
       document.getElementById('sobreConteudo').value = data.conteudo || '';
       document.getElementById('sobreCitacao').value = data.citacao || '';
     }
 
     document.getElementById('sobreSalvarBtn').addEventListener('click', async () => {
+      const foto_url = document.getElementById('sobreFotoUrl').value.trim();
+      const tagline = document.getElementById('sobreTagline').value.trim();
+      const localizacao = document.getElementById('sobreLocalizacao').value.trim();
       const conteudo = document.getElementById('sobreConteudo').value;
       const citacao = document.getElementById('sobreCitacao').value;
       try {
         const { error } = await sb().from('sobre_mim')
-          .update({ conteudo, citacao, atualizado_em: new Date().toISOString() })
+          .update({ foto_url, tagline, localizacao, conteudo, citacao, atualizado_em: new Date().toISOString() })
           .eq('id', sobreId);
         if (error) throw error;
         showMsg('sobreMsg', 'Guardado com sucesso.', true);

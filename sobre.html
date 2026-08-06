@@ -36,7 +36,7 @@
     grid-column: 1 / 3;
     grid-row: 1 / 2;
     display:flex;
-    justify-content:space-between;
+    justify-content:flex-end;
     align-items:flex-start;
     z-index:3;
     padding-top: clamp(4px, 1vh, 10px);
@@ -317,10 +317,6 @@
 
   <div class="card">
     <div class="header">
-      <a class="logo-wrap" href="index.html" style="text-decoration:none;">
-        <img class="avatar" src="avatar.png" alt="Odêncio Hermínio Maculuve">
-        <div class="logo">MACULUVE</div>
-      </a>
       <div class="top-menu">
         <div class="menu-wrap" id="menuWrap">
           <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false">
@@ -365,7 +361,7 @@
     </div>
 
     <div class="portrait">
-      <img src="man.png" alt="Odêncio Hermínio Maculuve">
+      <img id="portraitImg" alt="Odêncio Hermínio Maculuve" style="display:none;">
       <div class="dashnav">
         <span></span><span></span><span></span><span></span>
       </div>
@@ -457,6 +453,21 @@
     }
 
     carregarFooterIcons();
+
+    // ---------- Foto lateral, vinda do Supabase (Sobre mim) ----------
+    async function carregarFotoPerfil() {
+      try {
+        const { data, error } = await window.supabaseClient
+          .from('sobre_mim').select('foto_url').limit(1).maybeSingle();
+        if (error || !data || !data.foto_url) return;
+        const img = document.getElementById('portraitImg');
+        img.src = data.foto_url;
+        img.style.display = 'block';
+      } catch (err) {
+        console.warn('Não foi possível carregar a foto de perfil.', err);
+      }
+    }
+    carregarFotoPerfil();
   </script>
 </body>
 </html>
