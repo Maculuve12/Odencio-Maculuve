@@ -793,10 +793,13 @@
         <div class="list-item feedback-item ${f.lido ? '' : 'unread'}">
           <div class="list-item-head">
             <div>
-              <div class="list-item-title">${escapeHtml(f.nome)}</div>
+              <div class="list-item-title">${escapeHtml(f.nome)} ${f.aprovado ? '<span style="color:#7fd18a; font-size:10.5px; font-weight:600;">· publicado</span>' : '<span style="color:#e0c785; font-size:10.5px; font-weight:600;">· por aprovar</span>'}</div>
               <div class="list-item-sub">${new Date(f.criado_em).toLocaleString('pt-BR')}</div>
             </div>
             <div class="list-item-actions">
+              <button class="icon-btn" onclick="toggleFeedbackAprovado('${f.id}', ${!f.aprovado})" title="${f.aprovado ? 'Remover do site' : 'Aprovar e publicar'}">
+                <i class="fa-solid ${f.aprovado ? 'fa-eye-slash' : 'fa-check'}"></i>
+              </button>
               <button class="icon-btn" onclick="toggleFeedbackLido('${f.id}', ${!f.lido})" title="${f.lido ? 'Marcar como não lido' : 'Marcar como lido'}">
                 <i class="fa-solid ${f.lido ? 'fa-envelope-open' : 'fa-envelope'}"></i>
               </button>
@@ -806,6 +809,11 @@
           <div class="list-item-sub" style="margin-top:10px; color:#c7c8ca; line-height:1.6;">${escapeHtml(f.mensagem)}</div>
         </div>
       `).join('');
+    }
+
+    async function toggleFeedbackAprovado(id, novoEstado) {
+      await sb().from('feedback').update({ aprovado: novoEstado }).eq('id', id);
+      carregarFeedback();
     }
 
     async function toggleFeedbackLido(id, novoEstado) {

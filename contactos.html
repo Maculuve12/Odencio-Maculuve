@@ -186,67 +186,6 @@
     font-weight:500;
   }
 
-  /* Formulário de feedback */
-  .feedback-form {
-    margin-top: clamp(28px, 4vh, 40px);
-    max-width: 480px;
-  }
-
-  .feedback-form h2 {
-    font-size:13px;
-    letter-spacing:1px;
-    color:#c7c8ca;
-    font-weight:600;
-    margin-bottom: 14px;
-  }
-
-  .feedback-form input,
-  .feedback-form textarea {
-    width:100%;
-    background:#17181b;
-    border:1px solid #2a2b2f;
-    border-radius:6px;
-    padding:11px 14px;
-    color:#e4e4e6;
-    font-family:'Poppins',sans-serif;
-    font-size:13px;
-    margin-bottom:10px;
-    resize:vertical;
-  }
-
-  .feedback-form input:focus,
-  .feedback-form textarea:focus {
-    outline:none;
-    border-color:#5a5c62;
-  }
-
-  .feedback-form textarea { min-height:80px; }
-
-  .feedback-form button {
-    background:#e4e4e6;
-    color:#111214;
-    border:none;
-    border-radius:6px;
-    padding:10px 22px;
-    font-family:'Poppins',sans-serif;
-    font-size:13px;
-    font-weight:600;
-    cursor:pointer;
-    transition: opacity .2s ease;
-  }
-
-  .feedback-form button:hover { opacity:0.85; }
-  .feedback-form button:disabled { opacity:0.5; cursor:default; }
-
-  .feedback-msg {
-    font-size:12px;
-    margin-top:10px;
-    min-height:16px;
-  }
-
-  .feedback-msg.ok { color:#7fd18a; }
-  .feedback-msg.erro { color:#e08585; }
-
   /* Footer — apenas o ano, sem repetir os contactos */
   .footer {
     grid-column: 1 / 2;
@@ -330,7 +269,7 @@
             <a href="contactos.html" class="active">Contactos</a>
             <a href="publicacoes.html">Publicações</a>
             <a href="projetos.html">Projetos</a>
-            <a href="contactos.html#feedback">Feedback</a>
+            <a href="feedback.html">Feedback</a>
           </nav>
         </div>
       </div>
@@ -358,16 +297,6 @@
           <i class="fa-brands fa-facebook"></i>
           <span>Facebook</span>
         </a>
-      </div>
-
-      <div class="feedback-form" id="feedback">
-        <h2>Deixe o seu feedback</h2>
-        <form id="feedbackForm">
-          <input type="text" id="feedbackNome" placeholder="O seu nome" required maxlength="80">
-          <textarea id="feedbackMensagem" placeholder="A sua mensagem" required maxlength="1000"></textarea>
-          <button type="submit" id="feedbackBtn">Enviar</button>
-          <div class="feedback-msg" id="feedbackMsg"></div>
-        </form>
       </div>
     </div>
 
@@ -451,41 +380,6 @@
     }
 
     carregarContactos();
-
-    // ---------- Envio de feedback ----------
-    const feedbackForm = document.getElementById('feedbackForm');
-    const feedbackBtn = document.getElementById('feedbackBtn');
-    const feedbackMsg = document.getElementById('feedbackMsg');
-
-    feedbackForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const nome = document.getElementById('feedbackNome').value.trim();
-      const mensagem = document.getElementById('feedbackMensagem').value.trim();
-
-      if (!nome || !mensagem) return;
-
-      feedbackBtn.disabled = true;
-      feedbackMsg.textContent = '';
-      feedbackMsg.className = 'feedback-msg';
-
-      try {
-        const { error } = await window.supabaseClient
-          .from('feedback')
-          .insert([{ nome, mensagem }]);
-
-        if (error) throw error;
-
-        feedbackMsg.textContent = 'Obrigado! A sua mensagem foi enviada.';
-        feedbackMsg.className = 'feedback-msg ok';
-        feedbackForm.reset();
-      } catch (err) {
-        feedbackMsg.textContent = 'Não foi possível enviar agora. Tente novamente.';
-        feedbackMsg.className = 'feedback-msg erro';
-        console.error(err);
-      } finally {
-        feedbackBtn.disabled = false;
-      }
-    });
   </script>
 </body>
 </html>

@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feedback — Odêncio Maculuve</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height: 100%; }
+
+  body {
+    background:#111214;
+    font-family:'Poppins',sans-serif;
+    min-height: 100dvh;
+  }
+
+  .card {
+    width: 100%;
+    min-height: 100dvh;
+    background:#111214;
+    padding: clamp(20px, 4vw, 55px) clamp(20px, 6vw, 70px);
+    display:flex;
+    flex-direction:column;
+    position: relative;
+  }
+
+  /* Top bar */
+  .header {
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    z-index:3;
+    padding-bottom: clamp(24px, 4vh, 40px);
+  }
+
+  .logo { font-weight:700; letter-spacing:2px; font-size: clamp(13px, 1.4vw, 15px); color:#f2f2f2; }
+  .logo-wrap { display:flex; align-items:center; gap:12px; text-decoration:none; }
+
+  .avatar {
+    display:none;
+    width:36px; height:36px; border-radius:50%;
+    object-fit:cover; object-position: center top;
+    filter: grayscale(100%) contrast(1.05);
+    border:1px solid #3a3b40;
+  }
+
+  .top-menu { display:flex; align-items:flex-start; }
+  .menu-wrap { position: relative; display:flex; align-items:center; }
+
+  .menu-toggle {
+    display:flex; flex-direction:column; justify-content:center;
+    gap:5px; width:22px; height:16px; background:none; border:none;
+    cursor:pointer; padding:0;
+  }
+  .menu-toggle span {
+    display:block; height:2px; width:100%; background:#cfd0d2;
+    transition: transform .25s ease, opacity .2s ease, background .2s ease;
+  }
+  .menu-toggle:hover span { background:#ffffff; }
+  .menu-wrap.open .menu-toggle span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .menu-wrap.open .menu-toggle span:nth-child(2) { opacity:0; }
+  .menu-wrap.open .menu-toggle span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  .menu-dropdown {
+    position:absolute; top: calc(100% + 18px); right:0;
+    background:#17181b; border:1px solid #2a2b2f; border-radius:6px;
+    padding: 10px 0; min-width:170px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    opacity:0; visibility:hidden; transform: translateY(-8px);
+    transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
+    z-index: 50;
+  }
+  .menu-wrap.open .menu-dropdown { opacity:1; visibility:visible; transform: translateY(0); }
+
+  .menu-dropdown a {
+    display:block; padding: 10px 22px; font-size:13px; letter-spacing:0.5px;
+    color:#c7c8ca; text-decoration:none; font-weight:500;
+    transition: background .15s ease, color .15s ease;
+  }
+  .menu-dropdown a:hover { background:#232428; color:#ffffff; }
+  .menu-dropdown a.active { color:#ffffff; background:#1e1f23; }
+
+  /* Content */
+  .content { flex:1; max-width: 760px; }
+
+  .eyebrow { font-size:11px; letter-spacing:2px; color:#8b8c91; font-weight:600; margin-bottom: 10px; }
+
+  .hello {
+    font-family:'Poppins',sans-serif; font-weight:800;
+    font-size: clamp(34px, 5vw, 58px); color:#f5f5f5; line-height:1.05;
+    margin-bottom: clamp(10px, 2vh, 16px);
+  }
+
+  .desc {
+    font-size: clamp(12.5px, 1vw, 15px); line-height:1.8; color:#9fa0a4;
+    max-width: 560px; font-weight:400; margin-bottom: clamp(28px, 4vh, 40px);
+  }
+
+  /* ---------- Carrossel de feedback ---------- */
+  .carousel-wrap { position:relative; min-height: 260px; }
+
+  .carousel-track {
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    opacity: 1;
+    transition: opacity .4s ease;
+  }
+  .carousel-track.fading { opacity: 0; }
+
+  .fb-card {
+    background:#17181b;
+    border:1px solid #2a2b2f;
+    border-radius:10px;
+    padding: 18px 20px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    min-height: 120px;
+  }
+
+  .fb-name { font-size:13.5px; font-weight:700; color:#f0f0f1; }
+  .fb-date { font-size:10.5px; color:#6f7075; }
+  .fb-msg { font-size:12.5px; line-height:1.7; color:#9fa0a4; }
+
+  .empty-state { color:#6f7075; font-size:13px; padding: 30px 0; }
+
+  .carousel-actions {
+    display:flex;
+    justify-content:center;
+    margin-top: 22px;
+  }
+
+  .btn-vermais {
+    background:none;
+    border:1px solid #2a2b2f;
+    color:#c7c8ca;
+    padding:9px 22px;
+    border-radius:20px;
+    font-family:'Poppins',sans-serif;
+    font-size:12px;
+    font-weight:600;
+    cursor:pointer;
+    transition: background .2s ease, color .2s ease;
+  }
+  .btn-vermais:hover { background:#1e1f23; color:#ffffff; }
+
+  .dots { display:flex; justify-content:center; gap:6px; margin-top:16px; }
+  .dot { width:6px; height:6px; border-radius:50%; background:#2a2b2f; transition: background .3s ease; }
+  .dot.active { background:#c7c8ca; }
+
+  /* ---------- Modal "ver mais" ---------- */
+  .modal-overlay {
+    display:none;
+    position:fixed; inset:0;
+    background:rgba(0,0,0,0.7);
+    z-index:100;
+    align-items:center;
+    justify-content:center;
+    padding: 24px;
+  }
+  .modal-overlay.open { display:flex; }
+
+  .modal-box {
+    background:#17181b;
+    border:1px solid #2a2b2f;
+    border-radius:12px;
+    max-width: 560px;
+    width:100%;
+    max-height: 80vh;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .modal-head {
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 18px 22px;
+    border-bottom:1px solid #2a2b2f;
+  }
+  .modal-head h3 { font-size:15px; color:#f2f2f2; font-weight:700; }
+  .modal-close {
+    background:none; border:none; color:#8b8c91; font-size:16px; cursor:pointer;
+  }
+  .modal-close:hover { color:#ffffff; }
+
+  .modal-body {
+    padding: 18px 22px;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+
+  /* ---------- Formulário ---------- */
+  .feedback-form {
+    margin-top: clamp(36px, 5vh, 52px);
+    max-width: 480px;
+  }
+
+  .feedback-form h2 {
+    font-size:13px; letter-spacing:1px; color:#c7c8ca; font-weight:600; margin-bottom: 14px;
+  }
+
+  .feedback-form input,
+  .feedback-form textarea {
+    width:100%;
+    background:#17181b;
+    border:1px solid #2a2b2f;
+    border-radius:6px;
+    padding:11px 14px;
+    color:#e4e4e6;
+    font-family:'Poppins',sans-serif;
+    font-size:13px;
+    margin-bottom:10px;
+    resize:vertical;
+  }
+  .feedback-form input:focus,
+  .feedback-form textarea:focus { outline:none; border-color:#5a5c62; }
+  .feedback-form textarea { min-height:80px; }
+
+  .feedback-form button {
+    background:#e4e4e6;
+    color:#111214;
+    border:none;
+    border-radius:6px;
+    padding:10px 22px;
+    font-family:'Poppins',sans-serif;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    transition: opacity .2s ease;
+  }
+  .feedback-form button:hover { opacity:0.85; }
+  .feedback-form button:disabled { opacity:0.5; cursor:default; }
+
+  .feedback-msg { font-size:12px; margin-top:10px; min-height:16px; }
+  .feedback-msg.ok { color:#7fd18a; }
+  .feedback-msg.erro { color:#e08585; }
+
+  /* Footer */
+  .footer {
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding-top: clamp(30px, 5vh, 48px); padding-bottom: clamp(4px, 1vh, 10px);
+    z-index:2;
+  }
+  .footer-label { font-size:10px; letter-spacing:0.5px; color:#8b8c91; margin-bottom: 14px; font-weight:500; }
+  .footer-icons { display:flex; gap:20px; color:#cfd0d2; font-size:17px; margin-bottom: 14px; }
+  .footer-icons a { color:#cfd0d2; opacity:0.85; text-decoration:none; transition: opacity .2s, color .2s; }
+  .footer-icons a:hover { opacity:1; color:#ffffff; }
+  .footer-year { font-size:11px; letter-spacing:1px; color:#5f6065; font-weight:400; }
+
+  @media (max-width: 760px) {
+    .card { padding: 24px 24px; }
+    .menu-dropdown { right:0; left:auto; }
+    .avatar { display:block; }
+    .carousel-track { grid-template-columns: 1fr; }
+  }
+
+  @media (min-width: 1400px) {
+    .card { padding-left: 6vw; padding-right: 6vw; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="header">
+      <a class="logo-wrap" href="index.html">
+        <img class="avatar" src="avatar.png" alt="Odêncio Hermínio Maculuve">
+        <div class="logo">MACULUVE</div>
+      </a>
+      <div class="top-menu">
+        <div class="menu-wrap" id="menuWrap">
+          <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+          </button>
+          <nav class="menu-dropdown" id="menuDropdown">
+            <a href="index.html">Home</a>
+            <a href="sobre.html">Sobre mim</a>
+            <a href="contactos.html">Contactos</a>
+            <a href="publicacoes.html">Publicações</a>
+            <a href="projetos.html">Projetos</a>
+            <a href="feedback.html" class="active">Feedback</a>
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="eyebrow">FEEDBACK</div>
+      <h1 class="hello">Feedback dos clientes</h1>
+      <p class="desc">O que dizem as pessoas que já trabalharam ou contactaram comigo.</p>
+
+      <div class="carousel-wrap">
+        <div class="carousel-track" id="carouselTrack">
+          <div class="empty-state">A carregar feedbacks…</div>
+        </div>
+      </div>
+
+      <div class="dots" id="carouselDots"></div>
+
+      <div class="carousel-actions">
+        <button class="btn-vermais" id="verMaisBtn">Ver mais</button>
+      </div>
+
+      <div class="feedback-form">
+        <h2>Deixe o seu feedback</h2>
+        <form id="feedbackForm">
+          <input type="text" id="feedbackNome" placeholder="O seu nome" required maxlength="80">
+          <textarea id="feedbackMensagem" placeholder="A sua mensagem" required maxlength="1000"></textarea>
+          <button type="submit" id="feedbackBtn">Enviar</button>
+          <div class="feedback-msg" id="feedbackMsg"></div>
+        </form>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="footer-label">Contactar-me através de:</div>
+      <div class="footer-icons" id="footerIcons">
+        <a href="https://www.tiktok.com/@odenciofilomenabu?_r=1&_t=ZS-98dtDX3Fg8a" target="_blank" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+        <a href="https://www.facebook.com/share/1DaBPRNUiL/" target="_blank" title="Facebook"><i class="fa-brands fa-facebook"></i></a>
+        <a href="https://www.instagram.com/odenciofilomenabuqu?igsh=Nmowb2IyNWk4aXpl" target="_blank" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+        <a href="https://wa.me/qr/DJSC2R2MUJ5AF1" target="_blank" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+        <a href="mailto:odencmaculuve@gmail.com" title="E-mail"><i class="fa-solid fa-envelope"></i></a>
+      </div>
+      <div class="footer-year" id="footerYear"></div>
+    </div>
+  </div>
+
+  <!-- Modal "Ver mais" -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3>Todos os feedbacks</h3>
+        <button class="modal-close" id="modalCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script>
+    const menuWrap = document.getElementById('menuWrap');
+    const menuToggle = document.getElementById('menuToggle');
+
+    menuToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = menuWrap.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded', isOpen);
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!menuWrap.contains(e.target)) {
+        menuWrap.classList.remove('open');
+        menuToggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    document.getElementById('footerYear').textContent = '© ' + new Date().getFullYear();
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str || '';
+      return div.innerHTML;
+    }
+
+    function formatarData(iso) {
+      try {
+        const d = new Date(iso);
+        return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+      } catch { return ''; }
+    }
+
+    // ---------- Ícones do rodapé, dinâmicos ----------
+    const ICONES = { whatsapp:'fa-brands fa-whatsapp', instagram:'fa-brands fa-instagram', tiktok:'fa-brands fa-tiktok', facebook:'fa-brands fa-facebook', email:'fa-solid fa-envelope' };
+    const NOMES = { whatsapp:'WhatsApp', instagram:'Instagram', tiktok:'TikTok', facebook:'Facebook', email:'E-mail' };
+
+    async function carregarFooterIcons() {
+      try {
+        const { data, error } = await window.supabaseClient
+          .from('contactos').select('plataforma, valor, ordem').eq('ativo', true).order('ordem', { ascending: true });
+        if (error) throw error;
+        if (data && data.length > 0) {
+          const wrap = document.getElementById('footerIcons');
+          wrap.innerHTML = data.map(c => {
+            const icone = ICONES[c.plataforma] || 'fa-solid fa-link';
+            const nome = NOMES[c.plataforma] || c.plataforma;
+            const href = c.plataforma === 'email' ? ('mailto:' + c.valor) : c.valor;
+            return `<a href="${href}" target="_blank" title="${nome}"><i class="${icone}"></i></a>`;
+          }).join('');
+        }
+      } catch (err) { console.warn('Não foi possível carregar contactos.', err); }
+    }
+    carregarFooterIcons();
+
+    // ============================================================
+    // CARROSSEL DE FEEDBACK (4 por vez, loop infinito)
+    // ============================================================
+    let todosFeedbacks = [];
+    let grupos = [];
+    let grupoAtual = 0;
+    let timerCarrossel = null;
+
+    function cardHtml(f) {
+      return `
+        <div class="fb-card">
+          <div class="fb-name">${escapeHtml(f.nome)}</div>
+          <div class="fb-date">${formatarData(f.criado_em)}</div>
+          <div class="fb-msg">${escapeHtml(f.mensagem)}</div>
+        </div>`;
+    }
+
+    function montarGrupos(lista) {
+      const g = [];
+      for (let i = 0; i < lista.length; i += 4) {
+        g.push(lista.slice(i, i + 4));
+      }
+      return g;
+    }
+
+    function renderDots() {
+      const dotsWrap = document.getElementById('carouselDots');
+      if (grupos.length <= 1) { dotsWrap.innerHTML = ''; return; }
+      dotsWrap.innerHTML = grupos.map((_, i) =>
+        `<div class="dot ${i === grupoAtual ? 'active' : ''}"></div>`
+      ).join('');
+    }
+
+    function renderGrupoAtual() {
+      const track = document.getElementById('carouselTrack');
+      track.classList.add('fading');
+      setTimeout(() => {
+        const grupo = grupos[grupoAtual] || [];
+        track.innerHTML = grupo.map(cardHtml).join('');
+        track.classList.remove('fading');
+        renderDots();
+      }, 200);
+    }
+
+    function iniciarRotacao() {
+      if (timerCarrossel) clearInterval(timerCarrossel);
+      if (grupos.length <= 1) return;
+      timerCarrossel = setInterval(() => {
+        grupoAtual = (grupoAtual + 1) % grupos.length;
+        renderGrupoAtual();
+      }, 5000);
+    }
+
+    async function carregarFeedbacks() {
+      const track = document.getElementById('carouselTrack');
+      try {
+        const { data, error } = await window.supabaseClient
+          .from('feedback')
+          .select('nome, mensagem, criado_em')
+          .eq('aprovado', true)
+          .order('criado_em', { ascending: false });
+
+        if (error) throw error;
+
+        todosFeedbacks = data || [];
+
+        if (todosFeedbacks.length === 0) {
+          track.innerHTML = '<div class="empty-state">Ainda não há feedbacks publicados. Seja o primeiro a deixar o seu!</div>';
+          document.getElementById('verMaisBtn').style.display = 'none';
+          return;
+        }
+
+        grupos = montarGrupos(todosFeedbacks);
+        grupoAtual = 0;
+        track.classList.remove('fading');
+        track.innerHTML = grupos[0].map(cardHtml).join('');
+        renderDots();
+        iniciarRotacao();
+
+        document.getElementById('verMaisBtn').style.display = todosFeedbacks.length > 4 ? 'inline-block' : 'none';
+      } catch (err) {
+        console.error(err);
+        track.innerHTML = '<div class="empty-state">Não foi possível carregar os feedbacks agora.</div>';
+      }
+    }
+
+    carregarFeedbacks();
+
+    // ---------- Modal "Ver mais" ----------
+    const modalOverlay = document.getElementById('modalOverlay');
+    document.getElementById('verMaisBtn').addEventListener('click', () => {
+      const body = document.getElementById('modalBody');
+      body.innerHTML = todosFeedbacks.map(f => `
+        <div class="fb-card" style="border:none; border-bottom:1px solid #2a2b2f; border-radius:0; padding:12px 0;">
+          <div class="fb-name">${escapeHtml(f.nome)}</div>
+          <div class="fb-date">${formatarData(f.criado_em)}</div>
+          <div class="fb-msg">${escapeHtml(f.mensagem)}</div>
+        </div>
+      `).join('');
+      modalOverlay.classList.add('open');
+      if (timerCarrossel) clearInterval(timerCarrossel);
+    });
+
+    document.getElementById('modalCloseBtn').addEventListener('click', () => {
+      modalOverlay.classList.remove('open');
+      iniciarRotacao();
+    });
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) {
+        modalOverlay.classList.remove('open');
+        iniciarRotacao();
+      }
+    });
+
+    // ============================================================
+    // ENVIO DE FEEDBACK
+    // ============================================================
+    const feedbackForm = document.getElementById('feedbackForm');
+    const feedbackBtn = document.getElementById('feedbackBtn');
+    const feedbackMsg = document.getElementById('feedbackMsg');
+
+    feedbackForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nome = document.getElementById('feedbackNome').value.trim();
+      const mensagem = document.getElementById('feedbackMensagem').value.trim();
+      if (!nome || !mensagem) return;
+
+      feedbackBtn.disabled = true;
+      feedbackMsg.textContent = '';
+      feedbackMsg.className = 'feedback-msg';
+
+      try {
+        const { error } = await window.supabaseClient
+          .from('feedback')
+          .insert([{ nome, mensagem }]);
+
+        if (error) throw error;
+
+        feedbackMsg.textContent = 'Obrigado! O seu feedback foi enviado e será revisto antes de aparecer no site.';
+        feedbackMsg.className = 'feedback-msg ok';
+        feedbackForm.reset();
+      } catch (err) {
+        // Mensagem detalhada temporária, para diagnosticar a causa exata
+        feedbackMsg.textContent = 'Erro ao enviar: ' + (err.message || JSON.stringify(err));
+        feedbackMsg.className = 'feedback-msg erro';
+        console.error('Erro ao enviar feedback:', err);
+      } finally {
+        feedbackBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
