@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADM — Maculuve</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; }
+  body {
+    background:#0e0f11;
+    font-family:'Poppins',sans-serif;
+    color:#e4e4e6;
+    min-height:100dvh;
+  }
+
+  /* ---------- Login ---------- */
+  #loginScreen {
+    min-height:100dvh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+
+  .login-box {
+    width:100%;
+    max-width:340px;
+    background:#17181b;
+    border:1px solid #2a2b2f;
+    border-radius:10px;
+    padding:32px 28px;
+  }
+
+  .login-box .brand {
+    font-weight:700;
+    letter-spacing:2px;
+    font-size:14px;
+    margin-bottom:26px;
+    text-align:center;
+    color:#f2f2f2;
+  }
+
+  .field { margin-bottom:14px; }
+  .field label {
+    display:block;
+    font-size:11px;
+    letter-spacing:0.5px;
+    color:#8b8c91;
+    margin-bottom:6px;
+  }
+  .field input, .field textarea, .field select {
+    width:100%;
+    background:#111214;
+    border:1px solid #2a2b2f;
+    border-radius:6px;
+    padding:10px 12px;
+    color:#e4e4e6;
+    font-family:'Poppins',sans-serif;
+    font-size:13px;
+  }
+  .field input:focus, .field textarea:focus, .field select:focus {
+    outline:none; border-color:#5a5c62;
+  }
+  .field textarea { resize:vertical; min-height:90px; }
+
+  .btn {
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:#e4e4e6;
+    color:#111214;
+    border:none;
+    border-radius:6px;
+    padding:10px 18px;
+    font-family:'Poppins',sans-serif;
+    font-size:12.5px;
+    font-weight:600;
+    cursor:pointer;
+    transition: opacity .2s ease;
+  }
+  .btn:hover { opacity:0.85; }
+  .btn:disabled { opacity:0.5; cursor:default; }
+  .btn.secondary { background:#232428; color:#e4e4e6; border:1px solid #34353a; }
+  .btn.danger { background:#3a1d1d; color:#f0a3a3; border:1px solid #5a2a2a; }
+  .btn.small { padding:6px 12px; font-size:11.5px; }
+  .btn.block { width:100%; justify-content:center; }
+
+  .msg { font-size:12px; margin-top:10px; min-height:16px; }
+  .msg.ok { color:#7fd18a; }
+  .msg.erro { color:#e08585; }
+
+  /* ---------- Dashboard ---------- */
+  #dashboard { display:none; min-height:100dvh; }
+
+  .topbar {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 18px clamp(16px,3vw,40px);
+    border-bottom:1px solid #222327;
+    position:sticky; top:0;
+    background:#0e0f11;
+    z-index:10;
+  }
+
+  .topbar .brand { font-weight:700; letter-spacing:2px; font-size:14px; color:#f2f2f2; }
+  .topbar .user-email { font-size:11.5px; color:#6f7075; margin-right:14px; }
+
+  .tabs {
+    display:flex;
+    gap:4px;
+    padding: 14px clamp(16px,3vw,40px) 0;
+    flex-wrap:wrap;
+    border-bottom:1px solid #222327;
+  }
+
+  .tab-btn {
+    background:none;
+    border:none;
+    color:#8b8c91;
+    padding:10px 16px;
+    font-family:'Poppins',sans-serif;
+    font-size:12.5px;
+    font-weight:600;
+    cursor:pointer;
+    border-bottom:2px solid transparent;
+    transition: color .2s ease, border-color .2s ease;
+  }
+  .tab-btn:hover { color:#e4e4e6; }
+  .tab-btn.active { color:#ffffff; border-color:#ffffff; }
+
+  .tab-badge {
+    display:inline-block;
+    background:#e4e4e6;
+    color:#111214;
+    font-size:10px;
+    font-weight:700;
+    border-radius:10px;
+    padding:1px 7px;
+    margin-left:6px;
+  }
+
+  .panel { display:none; padding: clamp(20px,3vw,40px); max-width:900px; }
+  .panel.active { display:block; }
+
+  .panel h2 {
+    font-size:18px;
+    font-weight:700;
+    color:#f2f2f2;
+    margin-bottom:4px;
+  }
+  .panel .panel-sub {
+    font-size:12px;
+    color:#6f7075;
+    margin-bottom:24px;
+  }
+
+  .card-box {
+    background:#17181b;
+    border:1px solid #2a2b2f;
+    border-radius:10px;
+    padding:20px 22px;
+    margin-bottom:18px;
+  }
+
+  .row-flex { display:flex; gap:12px; flex-wrap:wrap; }
+  .row-flex > .field { flex:1; min-width:140px; }
+
+  .list-item {
+    background:#17181b;
+    border:1px solid #2a2b2f;
+    border-radius:8px;
+    padding:14px 16px;
+    margin-bottom:10px;
+  }
+
+  .list-item-head {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+
+  .list-item-title { font-size:13.5px; font-weight:600; color:#e4e4e6; }
+  .list-item-sub { font-size:11px; color:#6f7075; margin-top:2px; }
+  .list-item-actions { display:flex; gap:8px; flex-shrink:0; }
+
+  .icon-btn {
+    background:none;
+    border:1px solid #2a2b2f;
+    color:#c7c8ca;
+    width:30px; height:30px;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:12px;
+    transition: background .2s ease, color .2s ease;
+  }
+  .icon-btn:hover { background:#232428; color:#ffffff; }
+  .icon-btn.danger:hover { background:#3a1d1d; color:#f0a3a3; }
+
+  .dyn-list { display:flex; flex-direction:column; gap:8px; margin-top:6px; }
+  .dyn-row { display:flex; gap:8px; align-items:center; }
+  .dyn-row input { flex:1; }
+
+  .empty-note { color:#6f7075; font-size:12.5px; padding:14px 0; }
+
+  .checkbox-row { display:flex; align-items:center; gap:8px; margin-bottom:14px; }
+  .checkbox-row input { width:auto; }
+  .checkbox-row label { font-size:12.5px; color:#c7c8ca; margin:0; }
+
+  .feedback-item.unread { border-color:#3a3520; }
+  .feedback-item.unread .list-item-title::before {
+    content:"● "; color:#e0c785;
+  }
+
+  @media (max-width:640px) {
+    .tabs { overflow-x:auto; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- ================= LOGIN ================= -->
+  <div id="loginScreen">
+    <div class="login-box">
+      <div class="brand">MACULUVE · ADM</div>
+      <form id="loginForm">
+        <div class="field">
+          <label>E-mail</label>
+          <input type="email" id="loginEmail" required autocomplete="username">
+        </div>
+        <div class="field">
+          <label>Senha</label>
+          <input type="password" id="loginPassword" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn block" id="loginBtn">Entrar</button>
+        <div class="msg" id="loginMsg"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= DASHBOARD ================= -->
+  <div id="dashboard">
+    <div class="topbar">
+      <div class="brand">MACULUVE · ADM</div>
+      <div style="display:flex; align-items:center;">
+        <span class="user-email" id="userEmail"></span>
+        <button class="btn secondary small" id="logoutBtn"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="sobre">Sobre mim</button>
+      <button class="tab-btn" data-tab="contactos">Contactos</button>
+      <button class="tab-btn" data-tab="projetos">Projetos</button>
+      <button class="tab-btn" data-tab="publicacoes">Publicações</button>
+      <button class="tab-btn" data-tab="feedback">Feedback <span class="tab-badge" id="feedbackBadge" style="display:none;">0</span></button>
+    </div>
+
+    <!-- ---------- SOBRE MIM ---------- -->
+    <div class="panel active" id="panel-sobre">
+      <h2>Sobre mim</h2>
+      <div class="panel-sub">Este texto aparece na página "Sobre mim". Pode usar HTML simples (ex: &lt;p&gt;, &lt;b&gt;).</div>
+      <div class="card-box">
+        <div class="field">
+          <label>Conteúdo (parágrafos em HTML)</label>
+          <textarea id="sobreConteudo" style="min-height:220px;"></textarea>
+        </div>
+        <div class="field">
+          <label>Citação de destaque</label>
+          <input type="text" id="sobreCitacao">
+        </div>
+        <button class="btn" id="sobreSalvarBtn"><i class="fa-solid fa-check"></i> Guardar</button>
+        <div class="msg" id="sobreMsg"></div>
+      </div>
+    </div>
+
+    <!-- ---------- CONTACTOS ---------- -->
+    <div class="panel" id="panel-contactos">
+      <h2>Contactos</h2>
+      <div class="panel-sub">Links das redes sociais e e-mail exibidos no site.</div>
+
+      <div class="card-box">
+        <div class="row-flex">
+          <div class="field">
+            <label>Plataforma</label>
+            <select id="novoContactoPlataforma">
+              <option value="whatsapp">WhatsApp</option>
+              <option value="instagram">Instagram</option>
+              <option value="tiktok">TikTok</option>
+              <option value="facebook">Facebook</option>
+              <option value="email">E-mail</option>
+            </select>
+          </div>
+          <div class="field" style="flex:2;">
+            <label>Link / valor</label>
+            <input type="text" id="novoContactoValor" placeholder="https://... ou e-mail">
+          </div>
+          <div class="field" style="max-width:90px;">
+            <label>Ordem</label>
+            <input type="number" id="novoContactoOrdem" value="0">
+          </div>
+        </div>
+        <button class="btn" id="addContactoBtn"><i class="fa-solid fa-plus"></i> Adicionar contacto</button>
+        <div class="msg" id="contactoMsg"></div>
+      </div>
+
+      <div id="contactosLista"></div>
+    </div>
+
+    <!-- ---------- PROJETOS ---------- -->
+    <div class="panel" id="panel-projetos">
+      <h2>Projetos</h2>
+      <div class="panel-sub">Cada projeto pode ter várias imagens e vários links.</div>
+
+      <button class="btn" id="novoProjetoBtn" style="margin-bottom:18px;"><i class="fa-solid fa-plus"></i> Novo projeto</button>
+
+      <div class="card-box" id="projetoForm" style="display:none;">
+        <input type="hidden" id="projetoId">
+        <div class="field">
+          <label>Título</label>
+          <input type="text" id="projetoTitulo">
+        </div>
+        <div class="field">
+          <label>Descrição</label>
+          <textarea id="projetoDescricao"></textarea>
+        </div>
+        <div class="field">
+          <label>Imagem de capa (link direto)</label>
+          <input type="text" id="projetoImagemCapa" placeholder="https://...">
+        </div>
+
+        <div class="field">
+          <label>Imagens extra (galeria)</label>
+          <div class="dyn-list" id="projetoImagensList"></div>
+          <button type="button" class="btn secondary small" id="addImagemBtn" style="margin-top:8px;"><i class="fa-solid fa-plus"></i> Adicionar imagem</button>
+        </div>
+
+        <div class="field">
+          <label>Links (nome + URL)</label>
+          <div class="dyn-list" id="projetoLinksList"></div>
+          <button type="button" class="btn secondary small" id="addLinkBtn" style="margin-top:8px;"><i class="fa-solid fa-plus"></i> Adicionar link</button>
+        </div>
+
+        <div class="row-flex" style="margin-top:14px;">
+          <div class="field" style="max-width:110px;">
+            <label>Ordem</label>
+            <input type="number" id="projetoOrdem" value="0">
+          </div>
+        </div>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="projetoPublicado" checked>
+          <label for="projetoPublicado">Publicado (visível no site)</label>
+        </div>
+
+        <button class="btn" id="salvarProjetoBtn"><i class="fa-solid fa-check"></i> Guardar projeto</button>
+        <button class="btn secondary" id="cancelarProjetoBtn">Cancelar</button>
+        <div class="msg" id="projetoMsg"></div>
+      </div>
+
+      <div id="projetosLista"></div>
+    </div>
+
+    <!-- ---------- PUBLICAÇÕES ---------- -->
+    <div class="panel" id="panel-publicacoes">
+      <h2>Publicações</h2>
+      <div class="panel-sub">Aparecem no feed da página "Publicações", mais recentes primeiro.</div>
+
+      <button class="btn" id="novaPublicacaoBtn" style="margin-bottom:18px;"><i class="fa-solid fa-plus"></i> Nova publicação</button>
+
+      <div class="card-box" id="publicacaoForm" style="display:none;">
+        <input type="hidden" id="publicacaoId">
+        <div class="field">
+          <label>Título</label>
+          <input type="text" id="publicacaoTitulo">
+        </div>
+        <div class="field">
+          <label>Imagem (link direto, opcional)</label>
+          <input type="text" id="publicacaoImagem" placeholder="https://...">
+        </div>
+        <div class="field">
+          <label>Conteúdo (texto simples ou HTML com &lt;p&gt;)</label>
+          <textarea id="publicacaoConteudo" style="min-height:160px;"></textarea>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="publicacaoPublicado" checked>
+          <label for="publicacaoPublicado">Publicado (visível no site)</label>
+        </div>
+        <button class="btn" id="salvarPublicacaoBtn"><i class="fa-solid fa-check"></i> Guardar publicação</button>
+        <button class="btn secondary" id="cancelarPublicacaoBtn">Cancelar</button>
+        <div class="msg" id="publicacaoMsg"></div>
+      </div>
+
+      <div id="publicacoesLista"></div>
+    </div>
+
+    <!-- ---------- FEEDBACK ---------- -->
+    <div class="panel" id="panel-feedback">
+      <h2>Feedback</h2>
+      <div class="panel-sub">Mensagens enviadas por visitantes através da página de Contactos.</div>
+      <div id="feedbackLista"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script>
+    const sb = () => window.supabaseClient;
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str || '';
+      return div.innerHTML;
+    }
+
+    function showMsg(elId, text, ok) {
+      const el = document.getElementById(elId);
+      el.textContent = text;
+      el.className = 'msg ' + (ok ? 'ok' : 'erro');
+    }
+
+    // ============================================================
+    // AUTENTICAÇÃO
+    // ============================================================
+    const loginScreen = document.getElementById('loginScreen');
+    const dashboard = document.getElementById('dashboard');
+
+    async function checkSession() {
+      const { data } = await sb().auth.getSession();
+      if (data.session) {
+        entrarDashboard(data.session.user.email);
+      }
+    }
+
+    function entrarDashboard(email) {
+      loginScreen.style.display = 'none';
+      dashboard.style.display = 'block';
+      document.getElementById('userEmail').textContent = email;
+      carregarTudo();
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('loginBtn');
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      btn.disabled = true;
+      showMsg('loginMsg', '', true);
+      try {
+        const { data, error } = await sb().auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        entrarDashboard(data.user.email);
+      } catch (err) {
+        if (err.message && err.message.toLowerCase().includes('fetch')) {
+          showMsg('loginMsg', 'Não foi possível ligar ao Supabase. Isto costuma acontecer ao abrir o ficheiro diretamente (file://) em vez de num servidor/site. Tenta hospedar no GitHub Pages ou usar um servidor local.', false);
+        } else {
+          showMsg('loginMsg', err.message || 'E-mail ou senha inválidos.', false);
+        }
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await sb().auth.signOut();
+      location.reload();
+    });
+
+    checkSession();
+
+    // ============================================================
+    // TABS
+    // ============================================================
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    function carregarTudo() {
+      carregarSobre();
+      carregarContactos();
+      carregarProjetos();
+      carregarPublicacoes();
+      carregarFeedback();
+    }
+
+    // ============================================================
+    // SOBRE MIM
+    // ============================================================
+    let sobreId = null;
+
+    async function carregarSobre() {
+      const { data, error } = await sb().from('sobre_mim').select('*').limit(1).maybeSingle();
+      if (error || !data) return;
+      sobreId = data.id;
+      document.getElementById('sobreConteudo').value = data.conteudo || '';
+      document.getElementById('sobreCitacao').value = data.citacao || '';
+    }
+
+    document.getElementById('sobreSalvarBtn').addEventListener('click', async () => {
+      const conteudo = document.getElementById('sobreConteudo').value;
+      const citacao = document.getElementById('sobreCitacao').value;
+      try {
+        const { error } = await sb().from('sobre_mim')
+          .update({ conteudo, citacao, atualizado_em: new Date().toISOString() })
+          .eq('id', sobreId);
+        if (error) throw error;
+        showMsg('sobreMsg', 'Guardado com sucesso.', true);
+      } catch (err) {
+        showMsg('sobreMsg', 'Erro ao guardar: ' + err.message, false);
+      }
+    });
+
+    // ============================================================
+    // CONTACTOS
+    // ============================================================
+    async function carregarContactos() {
+      const lista = document.getElementById('contactosLista');
+      const { data, error } = await sb().from('contactos').select('*').order('ordem', { ascending: true });
+      if (error) { lista.innerHTML = '<div class="empty-note">Erro ao carregar.</div>'; return; }
+      if (!data || data.length === 0) { lista.innerHTML = '<div class="empty-note">Nenhum contacto cadastrado.</div>'; return; }
+
+      lista.innerHTML = data.map(c => `
+        <div class="list-item">
+          <div class="list-item-head">
+            <div>
+              <div class="list-item-title">${escapeHtml(c.plataforma)} ${c.ativo ? '' : '(inativo)'}</div>
+              <div class="list-item-sub">${escapeHtml(c.valor)}</div>
+            </div>
+            <div class="list-item-actions">
+              <button class="icon-btn" onclick="toggleContactoAtivo('${c.id}', ${!c.ativo})" title="${c.ativo ? 'Desativar' : 'Ativar'}">
+                <i class="fa-solid ${c.ativo ? 'fa-eye' : 'fa-eye-slash'}"></i>
+              </button>
+              <button class="icon-btn danger" onclick="apagarContacto('${c.id}')" title="Apagar"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    document.getElementById('addContactoBtn').addEventListener('click', async () => {
+      const plataforma = document.getElementById('novoContactoPlataforma').value;
+      const valor = document.getElementById('novoContactoValor').value.trim();
+      const ordem = parseInt(document.getElementById('novoContactoOrdem').value) || 0;
+      if (!valor) { showMsg('contactoMsg', 'Preencha o link/valor.', false); return; }
+      try {
+        const { error } = await sb().from('contactos').insert([{ plataforma, valor, ordem, ativo: true }]);
+        if (error) throw error;
+        document.getElementById('novoContactoValor').value = '';
+        showMsg('contactoMsg', 'Contacto adicionado.', true);
+        carregarContactos();
+      } catch (err) {
+        showMsg('contactoMsg', 'Erro: ' + err.message, false);
+      }
+    });
+
+    async function toggleContactoAtivo(id, novoEstado) {
+      await sb().from('contactos').update({ ativo: novoEstado }).eq('id', id);
+      carregarContactos();
+    }
+
+    async function apagarContacto(id) {
+      if (!confirm('Apagar este contacto?')) return;
+      await sb().from('contactos').delete().eq('id', id);
+      carregarContactos();
+    }
+
+    // ============================================================
+    // PROJETOS
+    // ============================================================
+    document.getElementById('novoProjetoBtn').addEventListener('click', () => abrirFormProjeto());
+    document.getElementById('cancelarProjetoBtn').addEventListener('click', () => {
+      document.getElementById('projetoForm').style.display = 'none';
+    });
+
+    document.getElementById('addImagemBtn').addEventListener('click', () => addImagemRow(''));
+    document.getElementById('addLinkBtn').addEventListener('click', () => addLinkRow('', ''));
+
+    function addImagemRow(valor) {
+      const wrap = document.getElementById('projetoImagensList');
+      const row = document.createElement('div');
+      row.className = 'dyn-row';
+      row.innerHTML = `
+        <input type="text" placeholder="https://link-da-imagem.jpg" value="${escapeHtml(valor)}">
+        <button type="button" class="icon-btn danger" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i></button>
+      `;
+      wrap.appendChild(row);
+    }
+
+    function addLinkRow(nome, url) {
+      const wrap = document.getElementById('projetoLinksList');
+      const row = document.createElement('div');
+      row.className = 'dyn-row';
+      row.innerHTML = `
+        <input type="text" placeholder="Nome (ex: Site)" value="${escapeHtml(nome)}" style="max-width:140px;">
+        <input type="text" placeholder="https://..." value="${escapeHtml(url)}">
+        <button type="button" class="icon-btn danger" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i></button>
+      `;
+      wrap.appendChild(row);
+    }
+
+    function abrirFormProjeto(p) {
+      document.getElementById('projetoForm').style.display = 'block';
+      document.getElementById('projetoId').value = p ? p.id : '';
+      document.getElementById('projetoTitulo').value = p ? p.titulo : '';
+      document.getElementById('projetoDescricao').value = p ? p.descricao : '';
+      document.getElementById('projetoImagemCapa').value = p ? (p.imagem_capa || '') : '';
+      document.getElementById('projetoOrdem').value = p ? p.ordem : 0;
+      document.getElementById('projetoPublicado').checked = p ? p.publicado : true;
+
+      document.getElementById('projetoImagensList').innerHTML = '';
+      (p && Array.isArray(p.imagens) ? p.imagens : []).forEach(url => addImagemRow(url));
+
+      document.getElementById('projetoLinksList').innerHTML = '';
+      (p && Array.isArray(p.links) ? p.links : []).forEach(l => addLinkRow(l.nome, l.url));
+
+      document.getElementById('projetoForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    document.getElementById('salvarProjetoBtn').addEventListener('click', async () => {
+      const id = document.getElementById('projetoId').value;
+      const titulo = document.getElementById('projetoTitulo').value.trim();
+      const descricao = document.getElementById('projetoDescricao').value.trim();
+      const imagem_capa = document.getElementById('projetoImagemCapa').value.trim();
+      const ordem = parseInt(document.getElementById('projetoOrdem').value) || 0;
+      const publicado = document.getElementById('projetoPublicado').checked;
+
+      const imagens = Array.from(document.querySelectorAll('#projetoImagensList input'))
+        .map(i => i.value.trim()).filter(v => v);
+
+      const links = Array.from(document.querySelectorAll('#projetoLinksList .dyn-row')).map(row => {
+        const inputs = row.querySelectorAll('input');
+        return { nome: inputs[0].value.trim(), url: inputs[1].value.trim() };
+      }).filter(l => l.url);
+
+      if (!titulo) { showMsg('projetoMsg', 'O título é obrigatório.', false); return; }
+
+      const payload = { titulo, descricao, imagem_capa, imagens, links, ordem, publicado, atualizado_em: new Date().toISOString() };
+
+      try {
+        let error;
+        if (id) {
+          ({ error } = await sb().from('projetos').update(payload).eq('id', id));
+        } else {
+          ({ error } = await sb().from('projetos').insert([payload]));
+        }
+        if (error) throw error;
+        showMsg('projetoMsg', 'Projeto guardado.', true);
+        document.getElementById('projetoForm').style.display = 'none';
+        carregarProjetos();
+      } catch (err) {
+        showMsg('projetoMsg', 'Erro: ' + err.message, false);
+      }
+    });
+
+    async function carregarProjetos() {
+      const lista = document.getElementById('projetosLista');
+      const { data, error } = await sb().from('projetos').select('*').order('ordem', { ascending: true });
+      if (error) { lista.innerHTML = '<div class="empty-note">Erro ao carregar.</div>'; return; }
+      if (!data || data.length === 0) { lista.innerHTML = '<div class="empty-note">Nenhum projeto cadastrado ainda.</div>'; return; }
+
+      window.__projetosCache = data;
+      lista.innerHTML = data.map(p => `
+        <div class="list-item">
+          <div class="list-item-head">
+            <div>
+              <div class="list-item-title">${escapeHtml(p.titulo)} ${p.publicado ? '' : '(rascunho)'}</div>
+              <div class="list-item-sub">${(p.imagens || []).length} imagens extra · ${(p.links || []).length} links</div>
+            </div>
+            <div class="list-item-actions">
+              <button class="icon-btn" onclick="editarProjeto('${p.id}')" title="Editar"><i class="fa-solid fa-pen"></i></button>
+              <button class="icon-btn danger" onclick="apagarProjeto('${p.id}')" title="Apagar"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function editarProjeto(id) {
+      const p = (window.__projetosCache || []).find(x => x.id === id);
+      if (p) abrirFormProjeto(p);
+    }
+
+    async function apagarProjeto(id) {
+      if (!confirm('Apagar este projeto?')) return;
+      await sb().from('projetos').delete().eq('id', id);
+      carregarProjetos();
+    }
+
+    // ============================================================
+    // PUBLICAÇÕES
+    // ============================================================
+    document.getElementById('novaPublicacaoBtn').addEventListener('click', () => abrirFormPublicacao());
+    document.getElementById('cancelarPublicacaoBtn').addEventListener('click', () => {
+      document.getElementById('publicacaoForm').style.display = 'none';
+    });
+
+    function abrirFormPublicacao(p) {
+      document.getElementById('publicacaoForm').style.display = 'block';
+      document.getElementById('publicacaoId').value = p ? p.id : '';
+      document.getElementById('publicacaoTitulo').value = p ? p.titulo : '';
+      document.getElementById('publicacaoImagem').value = p ? (p.imagem || '') : '';
+      document.getElementById('publicacaoConteudo').value = p ? p.conteudo : '';
+      document.getElementById('publicacaoPublicado').checked = p ? p.publicado : true;
+      document.getElementById('publicacaoForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    document.getElementById('salvarPublicacaoBtn').addEventListener('click', async () => {
+      const id = document.getElementById('publicacaoId').value;
+      const titulo = document.getElementById('publicacaoTitulo').value.trim();
+      const imagem = document.getElementById('publicacaoImagem').value.trim();
+      const conteudo = document.getElementById('publicacaoConteudo').value.trim();
+      const publicado = document.getElementById('publicacaoPublicado').checked;
+
+      if (!titulo) { showMsg('publicacaoMsg', 'O título é obrigatório.', false); return; }
+
+      const payload = { titulo, imagem, conteudo, publicado, atualizado_em: new Date().toISOString() };
+
+      try {
+        let error;
+        if (id) {
+          ({ error } = await sb().from('publicacoes').update(payload).eq('id', id));
+        } else {
+          ({ error } = await sb().from('publicacoes').insert([payload]));
+        }
+        if (error) throw error;
+        showMsg('publicacaoMsg', 'Publicação guardada.', true);
+        document.getElementById('publicacaoForm').style.display = 'none';
+        carregarPublicacoes();
+      } catch (err) {
+        showMsg('publicacaoMsg', 'Erro: ' + err.message, false);
+      }
+    });
+
+    async function carregarPublicacoes() {
+      const lista = document.getElementById('publicacoesLista');
+      const { data, error } = await sb().from('publicacoes').select('*').order('criado_em', { ascending: false });
+      if (error) { lista.innerHTML = '<div class="empty-note">Erro ao carregar.</div>'; return; }
+      if (!data || data.length === 0) { lista.innerHTML = '<div class="empty-note">Nenhuma publicação ainda.</div>'; return; }
+
+      window.__publicacoesCache = data;
+      lista.innerHTML = data.map(p => `
+        <div class="list-item">
+          <div class="list-item-head">
+            <div>
+              <div class="list-item-title">${escapeHtml(p.titulo)} ${p.publicado ? '' : '(rascunho)'}</div>
+              <div class="list-item-sub">${new Date(p.criado_em).toLocaleDateString('pt-BR')}</div>
+            </div>
+            <div class="list-item-actions">
+              <button class="icon-btn" onclick="editarPublicacao('${p.id}')" title="Editar"><i class="fa-solid fa-pen"></i></button>
+              <button class="icon-btn danger" onclick="apagarPublicacao('${p.id}')" title="Apagar"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function editarPublicacao(id) {
+      const p = (window.__publicacoesCache || []).find(x => x.id === id);
+      if (p) abrirFormPublicacao(p);
+    }
+
+    async function apagarPublicacao(id) {
+      if (!confirm('Apagar esta publicação?')) return;
+      await sb().from('publicacoes').delete().eq('id', id);
+      carregarPublicacoes();
+    }
+
+    // ============================================================
+    // FEEDBACK
+    // ============================================================
+    async function carregarFeedback() {
+      const lista = document.getElementById('feedbackLista');
+      const { data, error } = await sb().from('feedback').select('*').order('criado_em', { ascending: false });
+      if (error) { lista.innerHTML = '<div class="empty-note">Erro ao carregar.</div>'; return; }
+
+      const naoLidos = (data || []).filter(f => !f.lido).length;
+      const badge = document.getElementById('feedbackBadge');
+      if (naoLidos > 0) { badge.style.display = 'inline-block'; badge.textContent = naoLidos; }
+      else { badge.style.display = 'none'; }
+
+      if (!data || data.length === 0) { lista.innerHTML = '<div class="empty-note">Nenhum feedback recebido ainda.</div>'; return; }
+
+      lista.innerHTML = data.map(f => `
+        <div class="list-item feedback-item ${f.lido ? '' : 'unread'}">
+          <div class="list-item-head">
+            <div>
+              <div class="list-item-title">${escapeHtml(f.nome)}</div>
+              <div class="list-item-sub">${new Date(f.criado_em).toLocaleString('pt-BR')}</div>
+            </div>
+            <div class="list-item-actions">
+              <button class="icon-btn" onclick="toggleFeedbackLido('${f.id}', ${!f.lido})" title="${f.lido ? 'Marcar como não lido' : 'Marcar como lido'}">
+                <i class="fa-solid ${f.lido ? 'fa-envelope-open' : 'fa-envelope'}"></i>
+              </button>
+              <button class="icon-btn danger" onclick="apagarFeedback('${f.id}')" title="Apagar"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+          <div class="list-item-sub" style="margin-top:10px; color:#c7c8ca; line-height:1.6;">${escapeHtml(f.mensagem)}</div>
+        </div>
+      `).join('');
+    }
+
+    async function toggleFeedbackLido(id, novoEstado) {
+      await sb().from('feedback').update({ lido: novoEstado }).eq('id', id);
+      carregarFeedback();
+    }
+
+    async function apagarFeedback(id) {
+      if (!confirm('Apagar este feedback?')) return;
+      await sb().from('feedback').delete().eq('id', id);
+      carregarFeedback();
+    }
+  </script>
+</body>
+</html>
