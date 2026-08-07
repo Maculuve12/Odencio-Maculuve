@@ -82,7 +82,7 @@ function initNewsletterForm() {
         form.reset();
       }
     } catch (err) {
-      msg.textContent = 'Não foi possível inscrever agora. Tenta novamente.';
+      msg.textContent = 'Erro: ' + (err.message || JSON.stringify(err));
       msg.classList.add('erro');
       console.error('Erro newsletter:', err);
     } finally {
