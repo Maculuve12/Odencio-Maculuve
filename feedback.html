@@ -262,6 +262,17 @@
     .card { padding-left: 6vw; padding-right: 6vw; }
   }
 </style>
+<link rel="icon" type="image/jpeg" href="https://i.ibb.co/NnNvYrK2/FB-IMG-1757277596964.jpg">
+<meta property="og:title" content="Feedback — Odêncio Maculuve">
+<meta property="og:description" content="Veja o que dizem sobre trabalhar comigo.">
+<meta property="og:image" content="https://i.ibb.co/NnNvYrK2/FB-IMG-1757277596964.jpg">
+<meta property="og:url" content="https://maculuve12.github.io/Odencio/feedback.html">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Feedback — Odêncio Maculuve">
+<meta name="twitter:description" content="Veja o que dizem sobre trabalhar comigo.">
+<meta name="twitter:image" content="https://i.ibb.co/NnNvYrK2/FB-IMG-1757277596964.jpg">
+<link rel="stylesheet" href="site-extras.css">
 </head>
 <body>
 
@@ -284,14 +295,21 @@
       </div>
     </div>
 
-    <div class="content">
+    <div class="content reveal">
       <div class="eyebrow">FEEDBACK</div>
       <h1 class="hello">Feedback dos clientes</h1>
       <p class="desc">O que dizem as pessoas que já trabalharam ou contactaram comigo.</p>
 
       <div class="carousel-wrap">
         <div class="carousel-track" id="carouselTrack">
-          <div class="empty-state">A carregar feedbacks…</div>
+          <div class="skeleton-card">
+            <div class="skeleton skeleton-line w-40"></div>
+            <div class="skeleton skeleton-line w-80"></div>
+          </div>
+          <div class="skeleton-card">
+            <div class="skeleton skeleton-line w-40"></div>
+            <div class="skeleton skeleton-line w-80"></div>
+          </div>
         </div>
       </div>
 
@@ -321,7 +339,18 @@
         <a href="https://wa.me/qr/DJSC2R2MUJ5AF1" target="_blank" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
         <a href="mailto:odencmaculuve@gmail.com" title="E-mail"><i class="fa-solid fa-envelope"></i></a>
       </div>
-      <div class="footer-year" id="footerYear"></div>
+            <div class="footer-year" id="footerYear"></div>
+
+      <div class="newsletter-box reveal">
+        <h3>Não percas nenhuma novidade</h3>
+        <p>Deixa o teu e-mail para saberes quando eu publicar algo novo.</p>
+        <form id="newsletterForm" class="newsletter-form-row">
+          <input type="email" id="newsletterEmail" placeholder="O teu e-mail" required>
+          <button type="submit" id="newsletterBtn">Inscrever</button>
+        </form>
+        <div class="newsletter-msg" id="newsletterMsg"></div>
+      </div>
+
     </div>
   </div>
 
@@ -338,6 +367,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
+  <script src="site-extras.js"></script>
   <script>
     const menuWrap = document.getElementById('menuWrap');
     const menuToggle = document.getElementById('menuToggle');
@@ -542,6 +572,8 @@
         feedbackBtn.disabled = false;
       }
     });
+  
+    initWhatsAppButton('https://wa.me/qr/DJSC2R2MUJ5AF1');
   </script>
 </body>
 </html>

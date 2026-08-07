@@ -249,6 +249,17 @@
     .card { padding-left: 6vw; padding-right: 6vw; }
   }
 </style>
+<link rel="icon" type="image/jpeg" href="https://i.ibb.co/NnNvYrK2/FB-IMG-1757277596964.jpg">
+<meta property="og:title" content="Contactos — Odêncio Maculuve">
+<meta property="og:description" content="Fala diretamente comigo através das redes sociais.">
+<meta property="og:image" content="https://i.ibb.co/NnNvYrK2/FB-IMG-1757277596964.jpg">
+<meta property="og:url" content="https://maculuve12.github.io/Odencio/contactos.html">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Contactos — Odêncio Maculuve">
+<meta name="twitter:description" content="Fala diretamente comigo através das redes sociais.">
+<meta name="twitter:image" content="https://i.ibb.co/NnNvYrK2/FB-IMG-1757277596964.jpg">
+<link rel="stylesheet" href="site-extras.css">
 </head>
 <body>
 
@@ -271,7 +282,7 @@
       </div>
     </div>
 
-    <div class="content">
+    <div class="content reveal">
       <div class="eyebrow">CONTACTOS</div>
       <h1 class="hello">Vamos conversar</h1>
       <p class="desc">Escolha a rede da sua preferência para falar comigo diretamente.</p>
@@ -297,7 +308,18 @@
     </div>
 
     <div class="footer">
-      <div class="footer-year" id="footerYear"></div>
+            <div class="footer-year" id="footerYear"></div>
+
+      <div class="newsletter-box reveal">
+        <h3>Não percas nenhuma novidade</h3>
+        <p>Deixa o teu e-mail para saberes quando eu publicar algo novo.</p>
+        <form id="newsletterForm" class="newsletter-form-row">
+          <input type="email" id="newsletterEmail" placeholder="O teu e-mail" required>
+          <button type="submit" id="newsletterBtn">Inscrever</button>
+        </form>
+        <div class="newsletter-msg" id="newsletterMsg"></div>
+      </div>
+
     </div>
 
     <div class="portrait">
@@ -310,6 +332,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
+  <script src="site-extras.js"></script>
   <script>
     const menuWrap = document.getElementById('menuWrap');
     const menuToggle = document.getElementById('menuToggle');
@@ -391,6 +414,8 @@
       }
     }
     carregarFotoPerfil();
+  
+    initWhatsAppButton('https://wa.me/qr/DJSC2R2MUJ5AF1');
   </script>
 </body>
 </html>

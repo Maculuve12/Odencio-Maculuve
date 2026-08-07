@@ -248,6 +248,17 @@
     .card { padding-left: 6vw; padding-right: 6vw; }
   }
 </style>
+<link rel="icon" type="image/jpeg" href="https://i.ibb.co/NnNvYrK2/FB-IMG-1757277596964.jpg">
+<meta property="og:title" content="Projetos — Odêncio Maculuve">
+<meta property="og:description" content="Conhece os projetos da ROYALTY e da Maculuve Investment.">
+<meta property="og:image" content="https://i.ibb.co/NnNvYrK2/FB-IMG-1757277596964.jpg">
+<meta property="og:url" content="https://maculuve12.github.io/Odencio/projetos.html">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Projetos — Odêncio Maculuve">
+<meta name="twitter:description" content="Conhece os projetos da ROYALTY e da Maculuve Investment.">
+<meta name="twitter:image" content="https://i.ibb.co/NnNvYrK2/FB-IMG-1757277596964.jpg">
+<link rel="stylesheet" href="site-extras.css">
 </head>
 <body>
 
@@ -270,13 +281,27 @@
       </div>
     </div>
 
-    <div class="content">
+    <div class="content reveal">
       <div class="eyebrow">PROJETOS</div>
       <h1 class="hello">O que tenho construído</h1>
       <p class="desc">Uma seleção dos projetos e iniciativas em que estou envolvido, da ROYALTY às demais frentes da Maculuve Investment.</p>
 
       <div class="projects-grid" id="projectsGrid">
-        <div class="empty-state">A carregar projetos…</div>
+        <div class="skeleton-card">
+          <div class="skeleton skeleton-thumb"></div>
+          <div class="skeleton skeleton-line w-60"></div>
+          <div class="skeleton skeleton-line w-80"></div>
+        </div>
+        <div class="skeleton-card">
+          <div class="skeleton skeleton-thumb"></div>
+          <div class="skeleton skeleton-line w-60"></div>
+          <div class="skeleton skeleton-line w-80"></div>
+        </div>
+        <div class="skeleton-card">
+          <div class="skeleton skeleton-thumb"></div>
+          <div class="skeleton skeleton-line w-60"></div>
+          <div class="skeleton skeleton-line w-80"></div>
+        </div>
       </div>
     </div>
 
@@ -289,12 +314,24 @@
         <a href="https://wa.me/qr/DJSC2R2MUJ5AF1" target="_blank" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
         <a href="mailto:odencmaculuve@gmail.com" title="E-mail"><i class="fa-solid fa-envelope"></i></a>
       </div>
-      <div class="footer-year" id="footerYear"></div>
+            <div class="footer-year" id="footerYear"></div>
+
+      <div class="newsletter-box reveal">
+        <h3>Não percas nenhuma novidade</h3>
+        <p>Deixa o teu e-mail para saberes quando eu publicar algo novo.</p>
+        <form id="newsletterForm" class="newsletter-form-row">
+          <input type="email" id="newsletterEmail" placeholder="O teu e-mail" required>
+          <button type="submit" id="newsletterBtn">Inscrever</button>
+        </form>
+        <div class="newsletter-msg" id="newsletterMsg"></div>
+      </div>
+
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
+  <script src="site-extras.js"></script>
   <script>
     const menuWrap = document.getElementById('menuWrap');
     const menuToggle = document.getElementById('menuToggle');
@@ -394,14 +431,22 @@
               ).join('')}</div>`
             : '';
 
+          const urlPartilha = window.location.origin + window.location.pathname + '?projeto=' + p.id;
+          const shareRow = `
+            <div class="share-row">
+              <button class="share-btn" title="Partilhar no WhatsApp" onclick="partilharWhatsApp('${escapeHtml(p.titulo)}', '${urlPartilha}')"><i class="fa-brands fa-whatsapp"></i></button>
+              <button class="share-btn" title="Copiar link" onclick="copiarLink('${urlPartilha}', this)"><i class="fa-solid fa-link"></i></button>
+            </div>`;
+
           return `
-            <div class="project-card">
+            <div class="project-card fade-in-item">
               ${capa}
               <div class="project-body">
                 <div class="project-title">${escapeHtml(p.titulo)}</div>
                 <div class="project-desc">${escapeHtml(p.descricao)}</div>
                 ${imagensExtra}
                 ${links}
+                ${shareRow}
               </div>
             </div>`;
         }).join('');
@@ -412,6 +457,8 @@
     }
 
     carregarProjetos();
+  
+    initWhatsAppButton('https://wa.me/qr/DJSC2R2MUJ5AF1');
   </script>
 </body>
 </html>

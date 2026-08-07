@@ -1,0 +1,172 @@
+/* ============================================================
+   site-extras.css — estilos compartilhados por todas as páginas
+   ============================================================ */
+
+/* ---------- Botão flutuante do WhatsApp ---------- */
+.wa-float-btn {
+  position: fixed;
+  bottom: 22px;
+  right: 22px;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #25D366;
+  color: #0b1a10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  z-index: 200;
+  transition: transform .2s ease, box-shadow .2s ease;
+  animation: wa-pulse 2.4s ease-in-out infinite;
+}
+.wa-float-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.5);
+}
+@keyframes wa-pulse {
+  0%, 100% { box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 0 0 rgba(37,211,102,0.4); }
+  50% { box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 0 10px rgba(37,211,102,0); }
+}
+
+@media (max-width: 760px) {
+  .wa-float-btn { width: 48px; height: 48px; font-size: 22px; bottom: 16px; right: 16px; }
+}
+
+/* ---------- Animações suaves ao rolar ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Fade simples para itens inseridos dinamicamente (cards de listas) */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in-item {
+  animation: fadeInUp .5s ease both;
+}
+
+/* ---------- Skeleton loading ---------- */
+.skeleton {
+  background: linear-gradient(90deg, #1c1d20 25%, #232428 37%, #1c1d20 63%);
+  background-size: 400% 100%;
+  animation: skeleton-pulse 1.6s ease infinite;
+  border-radius: 8px;
+}
+@keyframes skeleton-pulse {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.skeleton-line { height: 12px; margin-bottom: 10px; border-radius: 4px; }
+.skeleton-line.w-60 { width: 60%; }
+.skeleton-line.w-80 { width: 80%; }
+.skeleton-line.w-40 { width: 40%; }
+
+.skeleton-card {
+  background:#17181b;
+  border:1px solid #2a2b2f;
+  border-radius:10px;
+  overflow:hidden;
+  padding: 18px 20px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.skeleton-card .skeleton-thumb {
+  width:100%;
+  aspect-ratio: 16/10;
+  margin-bottom: 10px;
+}
+
+/* ---------- Newsletter ---------- */
+.newsletter-box {
+  margin-top: clamp(28px, 4vh, 40px);
+  padding-top: clamp(24px, 4vh, 34px);
+  border-top: 1px solid #202124;
+  max-width: 420px;
+  text-align: left;
+}
+.newsletter-box h3 {
+  font-size: 12.5px;
+  letter-spacing: 0.5px;
+  color: #c7c8ca;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.newsletter-box p {
+  font-size: 11.5px;
+  color: #6f7075;
+  margin-bottom: 12px;
+}
+.newsletter-form-row {
+  display: flex;
+  gap: 8px;
+}
+.newsletter-form-row input {
+  flex: 1;
+  background: #17181b;
+  border: 1px solid #2a2b2f;
+  border-radius: 6px;
+  padding: 10px 12px;
+  color: #e4e4e6;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12.5px;
+}
+.newsletter-form-row input:focus { outline: none; border-color: #5a5c62; }
+.newsletter-form-row button {
+  background: #e4e4e6;
+  color: #111214;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 18px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity .2s ease;
+}
+.newsletter-form-row button:hover { opacity: 0.85; }
+.newsletter-form-row button:disabled { opacity: 0.5; cursor: default; }
+
+.newsletter-msg { font-size: 11.5px; margin-top: 8px; min-height: 14px; }
+.newsletter-msg.ok { color: #7fd18a; }
+.newsletter-msg.erro { color: #e08585; }
+
+@media (max-width: 760px) {
+  .newsletter-box { text-align: center; margin-left: auto; margin-right: auto; }
+  .newsletter-form-row { flex-direction: column; }
+}
+
+/* ---------- Botões de partilha ---------- */
+.share-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.share-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background: #1e1f23;
+  border: 1px solid #2a2b2f;
+  color: #c7c8ca;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background .2s ease, color .2s ease;
+}
+.share-btn:hover { background: #26272b; color: #ffffff; }

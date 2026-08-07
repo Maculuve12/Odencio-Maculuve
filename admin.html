@@ -258,6 +258,7 @@
       <button class="tab-btn" data-tab="projetos">Projetos</button>
       <button class="tab-btn" data-tab="publicacoes">Publicações</button>
       <button class="tab-btn" data-tab="feedback">Feedback <span class="tab-badge" id="feedbackBadge" style="display:none;">0</span></button>
+      <button class="tab-btn" data-tab="newsletter">Newsletter</button>
     </div>
 
     <!-- ---------- SOBRE MIM ---------- -->
@@ -418,6 +419,14 @@
       <div class="panel-sub">Mensagens enviadas por visitantes através da página de Contactos.</div>
       <div id="feedbackLista"></div>
     </div>
+
+    <!-- ---------- NEWSLETTER ---------- -->
+    <div class="panel" id="panel-newsletter">
+      <h2>Newsletter</h2>
+      <div class="panel-sub">E-mails de visitantes inscritos para receber novidades.</div>
+      <button class="btn secondary" id="exportarNewsletterBtn" style="margin-bottom:18px;"><i class="fa-solid fa-download"></i> Exportar CSV</button>
+      <div id="newsletterLista"></div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -504,6 +513,7 @@
       carregarProjetos();
       carregarPublicacoes();
       carregarFeedback();
+      carregarNewsletter();
     }
 
     // ============================================================
@@ -846,6 +856,56 @@
       await sb().from('feedback').delete().eq('id', id);
       carregarFeedback();
     }
+
+    // ============================================================
+    // NEWSLETTER
+    // ============================================================
+    let __newsletterCache = [];
+
+    async function carregarNewsletter() {
+      const lista = document.getElementById('newsletterLista');
+      const { data, error } = await sb().from('newsletter').select('*').order('criado_em', { ascending: false });
+      if (error) { lista.innerHTML = '<div class="empty-note">Erro ao carregar.</div>'; return; }
+      __newsletterCache = data || [];
+
+      if (!data || data.length === 0) { lista.innerHTML = '<div class="empty-note">Nenhum e-mail inscrito ainda.</div>'; return; }
+
+      lista.innerHTML = data.map(n => `
+        <div class="list-item">
+          <div class="list-item-head">
+            <div>
+              <div class="list-item-title">${escapeHtml(n.email)}</div>
+              <div class="list-item-sub">${new Date(n.criado_em).toLocaleDateString('pt-BR')}</div>
+            </div>
+            <div class="list-item-actions">
+              <button class="icon-btn danger" onclick="apagarNewsletter('${n.id}')" title="Apagar"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function apagarNewsletter(id) {
+      if (!confirm('Apagar este e-mail da lista?')) return;
+      await sb().from('newsletter').delete().eq('id', id);
+      carregarNewsletter();
+    }
+
+    document.getElementById('exportarNewsletterBtn').addEventListener('click', () => {
+      if (__newsletterCache.length === 0) { alert('Não há e-mails para exportar.'); return; }
+      const linhas = ['email,data_inscricao'];
+      __newsletterCache.forEach(n => {
+        linhas.push(`${n.email},${new Date(n.criado_em).toISOString()}`);
+      });
+      const csv = linhas.join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'newsletter_' + new Date().toISOString().slice(0,10) + '.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
   </script>
 </body>
 </html>
