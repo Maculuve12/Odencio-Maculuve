@@ -205,6 +205,25 @@
   .dyn-row { display:flex; gap:8px; align-items:center; }
   .dyn-row input { flex:1; }
 
+  .format-toolbar {
+    display:flex;
+    gap:6px;
+    margin-bottom:6px;
+  }
+  .fmt-btn {
+    width:30px;
+    height:28px;
+    background:#111214;
+    border:1px solid #2a2b2f;
+    border-radius:5px;
+    color:#c7c8ca;
+    cursor:pointer;
+    font-family:'Poppins',sans-serif;
+    font-size:12px;
+    transition: background .15s ease, color .15s ease;
+  }
+  .fmt-btn:hover { background:#232428; color:#ffffff; }
+
   .empty-note { color:#6f7075; font-size:12.5px; padding:14px 0; }
 
   .checkbox-row { display:flex; align-items:center; gap:8px; margin-bottom:14px; }
@@ -341,6 +360,10 @@
         </div>
         <div class="field">
           <label>Descrição</label>
+          <div class="format-toolbar">
+            <button type="button" class="fmt-btn" onclick="aplicarFormato('projetoDescricao','b')" title="Negrito"><b>N</b></button>
+            <button type="button" class="fmt-btn" onclick="aplicarFormato('projetoDescricao','i')" title="Itálico"><i>I</i></button>
+          </div>
           <textarea id="projetoDescricao"></textarea>
         </div>
         <div class="field">
@@ -394,11 +417,22 @@
           <input type="text" id="publicacaoTitulo">
         </div>
         <div class="field">
-          <label>Imagem (link direto, opcional)</label>
+          <label>Imagem de capa (link direto, opcional)</label>
           <input type="text" id="publicacaoImagem" placeholder="https://...">
         </div>
+
         <div class="field">
-          <label>Conteúdo (texto simples ou HTML com &lt;p&gt;)</label>
+          <label>Mais imagens (carrossel estilo Instagram, opcional)</label>
+          <div class="dyn-list" id="publicacaoImagensList"></div>
+          <button type="button" class="btn secondary small" id="addImagemPublicacaoBtn" style="margin-top:8px;"><i class="fa-solid fa-plus"></i> Adicionar imagem</button>
+        </div>
+
+        <div class="field">
+          <label>Conteúdo</label>
+          <div class="format-toolbar">
+            <button type="button" class="fmt-btn" onclick="aplicarFormato('publicacaoConteudo','b')" title="Negrito"><b>N</b></button>
+            <button type="button" class="fmt-btn" onclick="aplicarFormato('publicacaoConteudo','i')" title="Itálico"><i>I</i></button>
+          </div>
           <textarea id="publicacaoConteudo" style="min-height:160px;"></textarea>
         </div>
         <div class="checkbox-row">
@@ -611,11 +645,11 @@
       document.getElementById('projetoForm').style.display = 'none';
     });
 
-    document.getElementById('addImagemBtn').addEventListener('click', () => addImagemRow(''));
+    document.getElementById('addImagemBtn').addEventListener('click', () => addImagemRow('projetoImagensList', ''));
     document.getElementById('addLinkBtn').addEventListener('click', () => addLinkRow('', ''));
 
-    function addImagemRow(valor) {
-      const wrap = document.getElementById('projetoImagensList');
+    function addImagemRow(containerId, valor) {
+      const wrap = document.getElementById(containerId);
       const row = document.createElement('div');
       row.className = 'dyn-row';
       row.innerHTML = `
@@ -637,6 +671,20 @@
       wrap.appendChild(row);
     }
 
+    // ---------- Formatação de texto (negrito / itálico) ----------
+    function aplicarFormato(textareaId, tag) {
+      const ta = document.getElementById(textareaId);
+      const start = ta.selectionStart;
+      const end = ta.selectionEnd;
+      const selecionado = ta.value.substring(start, end) || 'texto';
+      const antes = ta.value.substring(0, start);
+      const depois = ta.value.substring(end);
+      ta.value = antes + '<' + tag + '>' + selecionado + '</' + tag + '>' + depois;
+      ta.focus();
+      ta.selectionStart = start + tag.length + 2;
+      ta.selectionEnd = ta.selectionStart + selecionado.length;
+    }
+
     function abrirFormProjeto(p) {
       document.getElementById('projetoForm').style.display = 'block';
       document.getElementById('projetoId').value = p ? p.id : '';
@@ -647,7 +695,7 @@
       document.getElementById('projetoPublicado').checked = p ? p.publicado : true;
 
       document.getElementById('projetoImagensList').innerHTML = '';
-      (p && Array.isArray(p.imagens) ? p.imagens : []).forEach(url => addImagemRow(url));
+      (p && Array.isArray(p.imagens) ? p.imagens : []).forEach(url => addImagemRow('projetoImagensList', url));
 
       document.getElementById('projetoLinksList').innerHTML = '';
       (p && Array.isArray(p.links) ? p.links : []).forEach(l => addLinkRow(l.nome, l.url));
@@ -666,9 +714,16 @@
       const imagens = Array.from(document.querySelectorAll('#projetoImagensList input'))
         .map(i => i.value.trim()).filter(v => v);
 
+      function normalizarUrl(url) {
+        if (!url) return '';
+        const u = url.trim();
+        if (/^(https?:|mailto:|tel:)/i.test(u)) return u;
+        return 'https://' + u;
+      }
+
       const links = Array.from(document.querySelectorAll('#projetoLinksList .dyn-row')).map(row => {
         const inputs = row.querySelectorAll('input');
-        return { nome: inputs[0].value.trim(), url: inputs[1].value.trim() };
+        return { nome: inputs[0].value.trim(), url: normalizarUrl(inputs[1].value.trim()) };
       }).filter(l => l.url);
 
       if (!titulo) { showMsg('projetoMsg', 'O título é obrigatório.', false); return; }
@@ -733,6 +788,8 @@
       document.getElementById('publicacaoForm').style.display = 'none';
     });
 
+    document.getElementById('addImagemPublicacaoBtn').addEventListener('click', () => addImagemRow('publicacaoImagensList', ''));
+
     function abrirFormPublicacao(p) {
       document.getElementById('publicacaoForm').style.display = 'block';
       document.getElementById('publicacaoId').value = p ? p.id : '';
@@ -740,6 +797,10 @@
       document.getElementById('publicacaoImagem').value = p ? (p.imagem || '') : '';
       document.getElementById('publicacaoConteudo').value = p ? p.conteudo : '';
       document.getElementById('publicacaoPublicado').checked = p ? p.publicado : true;
+
+      document.getElementById('publicacaoImagensList').innerHTML = '';
+      (p && Array.isArray(p.imagens) ? p.imagens : []).forEach(url => addImagemRow('publicacaoImagensList', url));
+
       document.getElementById('publicacaoForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
@@ -750,9 +811,12 @@
       const conteudo = document.getElementById('publicacaoConteudo').value.trim();
       const publicado = document.getElementById('publicacaoPublicado').checked;
 
+      const imagens = Array.from(document.querySelectorAll('#publicacaoImagensList input'))
+        .map(i => i.value.trim()).filter(v => v);
+
       if (!titulo) { showMsg('publicacaoMsg', 'O título é obrigatório.', false); return; }
 
-      const payload = { titulo, imagem, conteudo, publicado, atualizado_em: new Date().toISOString() };
+      const payload = { titulo, imagem, imagens, conteudo, publicado, atualizado_em: new Date().toISOString() };
 
       try {
         let error;

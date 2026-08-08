@@ -175,8 +175,77 @@
     color:#9fa0a4;
   }
 
+  .post-content { margin-bottom: 4px; }
   .post-content p { margin-bottom: 10px; }
   .post-content p:last-child { margin-bottom: 0; }
+
+  .post-content.truncate {
+    max-height: 4.8em;
+    overflow: hidden;
+    position: relative;
+    transition: max-height .3s ease;
+  }
+  .post-content.truncate:not(.expanded)::after {
+    content:'';
+    position:absolute;
+    bottom:0; left:0; right:0;
+    height: 1.6em;
+    background: linear-gradient(to bottom, transparent, #17181b);
+  }
+  .post-content.truncate.expanded { max-height: none; }
+
+  .ver-mais-btn {
+    background:none;
+    border:none;
+    color:#9fa0a4;
+    font-family:'Poppins',sans-serif;
+    font-size:11.5px;
+    font-weight:600;
+    cursor:pointer;
+    padding:0;
+    margin-bottom: 10px;
+    text-decoration: underline;
+  }
+  .ver-mais-btn:hover { color:#ffffff; }
+
+  /* Carrossel de imagens (várias fotos, estilo Instagram) */
+  .post-carousel { position:relative; }
+  .carousel-scroll {
+    display:flex;
+    overflow-x:auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width:none;
+  }
+  .carousel-scroll::-webkit-scrollbar { display:none; }
+  .carousel-slide {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    max-height: 340px;
+    background:#1c1d20;
+  }
+  .carousel-slide img {
+    width:100%;
+    height:100%;
+    max-height: 340px;
+    object-fit:cover;
+    filter: grayscale(50%) contrast(1.05);
+    display:block;
+  }
+  .carousel-dots {
+    position:absolute;
+    bottom:10px;
+    left:0; right:0;
+    display:flex;
+    justify-content:center;
+    gap:6px;
+  }
+  .carousel-dot {
+    width:6px; height:6px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.35);
+    transition: background .2s ease;
+  }
+  .carousel-dot.active { background:#ffffff; }
 
   .empty-state {
     color:#6f7075;
@@ -275,17 +344,7 @@
     </div>
 
     <div class="footer">
-      <div class="footer-label">Contactar-me através de:</div>
-      <div class="footer-icons" id="footerIcons">
-        <a href="https://www.tiktok.com/@odenciofilomenabu?_r=1&_t=ZS-98dtDX3Fg8a" target="_blank" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
-        <a href="https://www.facebook.com/share/1DaBPRNUiL/" target="_blank" title="Facebook"><i class="fa-brands fa-facebook"></i></a>
-        <a href="https://www.instagram.com/odenciofilomenabuqu?igsh=Nmowb2IyNWk4aXpl" target="_blank" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
-        <a href="https://wa.me/qr/DJSC2R2MUJ5AF1" target="_blank" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
-        <a href="mailto:odencmaculuve@gmail.com" title="E-mail"><i class="fa-solid fa-envelope"></i></a>
-      </div>
-            <div class="footer-year" id="footerYear"></div>
-
-      <div class="newsletter-box reveal">
+<div class="newsletter-box reveal">
         <h3>Não percas nenhuma novidade</h3>
         <p>Deixa o teu e-mail para saberes quando eu publicar algo novo.</p>
         <form id="newsletterForm" class="newsletter-form-row">
@@ -295,6 +354,15 @@
         <div class="newsletter-msg" id="newsletterMsg"></div>
       </div>
 
+      <div class="footer-label">Contactar-me através de:</div>
+      <div class="footer-icons" id="footerIcons">
+        <a href="https://www.tiktok.com/@odenciofilomenabu?_r=1&_t=ZS-98dtDX3Fg8a" target="_blank" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+        <a href="https://www.facebook.com/share/1DaBPRNUiL/" target="_blank" title="Facebook"><i class="fa-brands fa-facebook"></i></a>
+        <a href="https://www.instagram.com/odenciofilomenabuqu?igsh=Nmowb2IyNWk4aXpl" target="_blank" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+        <a href="https://wa.me/qr/DJSC2R2MUJ5AF1" target="_blank" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+        <a href="mailto:odencmaculuve@gmail.com" title="E-mail"><i class="fa-solid fa-envelope"></i></a>
+      </div>
+            <div class="footer-year" id="footerYear"></div>
     </div>
   </div>
 
@@ -379,7 +447,7 @@
       try {
         const { data, error } = await window.supabaseClient
           .from('publicacoes')
-          .select('id, titulo, conteudo, imagem, criado_em')
+          .select('id, titulo, conteudo, imagem, imagens, criado_em')
           .eq('publicado', true)
           .order('criado_em', { ascending: false });
 
@@ -390,16 +458,31 @@
           return;
         }
 
-        feed.innerHTML = data.map(p => {
-          const capa = p.imagem
-            ? `<div class="post-cover"><img src="${escapeHtml(p.imagem)}" alt="${escapeHtml(p.titulo)}"></div>`
-            : '';
+        feed.innerHTML = data.map((p, idx) => {
+          const todasImagens = [p.imagem, ...(Array.isArray(p.imagens) ? p.imagens : [])].filter(Boolean);
+
+          let capa = '';
+          if (todasImagens.length === 1) {
+            capa = `<div class="post-cover"><img src="${escapeHtml(todasImagens[0])}" alt="${escapeHtml(p.titulo)}"></div>`;
+          } else if (todasImagens.length > 1) {
+            const carId = 'car-' + idx;
+            capa = `
+              <div class="post-carousel" id="${carId}">
+                <div class="carousel-scroll" onscroll="onCarrosselScroll('${carId}')">
+                  ${todasImagens.map(url => `<div class="carousel-slide"><img src="${escapeHtml(url)}" alt="${escapeHtml(p.titulo)}"></div>`).join('')}
+                </div>
+                <div class="carousel-dots">
+                  ${todasImagens.map((_, i) => `<span class="carousel-dot ${i === 0 ? 'active' : ''}"></span>`).join('')}
+                </div>
+              </div>`;
+          }
 
           // conteúdo pode conter HTML simples (parágrafos) vindo do ADM
           const conteudoHtml = p.conteudo && p.conteudo.trim().startsWith('<')
             ? p.conteudo
             : `<p>${escapeHtml(p.conteudo)}</p>`;
 
+          const conteudoId = 'conteudo-' + idx;
           const urlPartilha = window.location.origin + window.location.pathname + '?post=' + p.id;
 
           return `
@@ -408,18 +491,40 @@
               <div class="post-body">
                 <div class="post-date">${formatarData(p.criado_em)}</div>
                 <div class="post-title">${escapeHtml(p.titulo)}</div>
-                <div class="post-content">${conteudoHtml}</div>
+                <div class="post-content truncate" id="${conteudoId}">${conteudoHtml}</div>
+                <button class="ver-mais-btn" onclick="alternarVerMais('${conteudoId}', this)">Ver mais</button>
                 <div class="share-row">
-                  <button class="share-btn" title="Partilhar no WhatsApp" onclick="partilharWhatsApp('${escapeHtml(p.titulo)}', '${urlPartilha}')"><i class="fa-brands fa-whatsapp"></i></button>
+                  <button class="share-btn" title="Partilhar" onclick="nativeShare('${escapeHtml(p.titulo)}', '${urlPartilha}')"><i class="fa-solid fa-share-nodes"></i></button>
                   <button class="share-btn" title="Copiar link" onclick="copiarLink('${urlPartilha}', this)"><i class="fa-solid fa-link"></i></button>
                 </div>
               </div>
             </article>`;
         }).join('');
+
+        // esconde "ver mais" nos textos que já cabem sem corte
+        document.querySelectorAll('.post-content.truncate').forEach(el => {
+          if (el.scrollHeight <= el.clientHeight + 4) {
+            el.nextElementSibling.style.display = 'none';
+          }
+        });
       } catch (err) {
         console.error(err);
         feed.innerHTML = '<div class="empty-state">Não foi possível carregar as publicações agora. Tente novamente mais tarde.</div>';
       }
+    }
+
+    function onCarrosselScroll(carId) {
+      const car = document.getElementById(carId);
+      const scrollDiv = car.querySelector('.carousel-scroll');
+      const slideWidth = scrollDiv.clientWidth;
+      const idx = Math.round(scrollDiv.scrollLeft / slideWidth);
+      car.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+    }
+
+    function alternarVerMais(id, btn) {
+      const el = document.getElementById(id);
+      const aberto = el.classList.toggle('expanded');
+      btn.textContent = aberto ? 'Ver menos' : 'Ver mais';
     }
 
     carregarPublicacoes();

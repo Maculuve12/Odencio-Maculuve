@@ -97,6 +97,16 @@ function partilharWhatsApp(titulo, url) {
   window.open('https://wa.me/?text=' + texto, '_blank');
 }
 
+// Partilha universal: abre o menu nativo do sistema (qualquer app/rede social).
+// Se o navegador não suportar (ex: PC/desktop), volta para o WhatsApp como alternativa.
+function nativeShare(titulo, url) {
+  if (navigator.share) {
+    navigator.share({ title: titulo, url: url }).catch(() => {});
+  } else {
+    partilharWhatsApp(titulo, url);
+  }
+}
+
 function copiarLink(url, btnEl) {
   navigator.clipboard.writeText(url).then(() => {
     const original = btnEl.innerHTML;

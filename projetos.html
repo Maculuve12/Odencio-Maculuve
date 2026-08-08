@@ -168,6 +168,36 @@
     flex:1;
   }
 
+  .project-desc.truncate {
+    max-height: 5.1em;
+    overflow: hidden;
+    position: relative;
+    flex: none;
+    transition: max-height .3s ease;
+  }
+  .project-desc.truncate:not(.expanded)::after {
+    content:'';
+    position:absolute;
+    bottom:0; left:0; right:0;
+    height: 1.6em;
+    background: linear-gradient(to bottom, transparent, #17181b);
+  }
+  .project-desc.truncate.expanded { max-height: none; }
+
+  .ver-mais-btn {
+    background:none;
+    border:none;
+    color:#9fa0a4;
+    font-family:'Poppins',sans-serif;
+    font-size:11px;
+    font-weight:600;
+    cursor:pointer;
+    padding:0;
+    align-self:flex-start;
+    text-decoration: underline;
+  }
+  .ver-mais-btn:hover { color:#ffffff; }
+
   .project-gallery {
     display:flex;
     gap:6px;
@@ -306,17 +336,7 @@
     </div>
 
     <div class="footer">
-      <div class="footer-label">Contactar-me através de:</div>
-      <div class="footer-icons" id="footerIcons">
-        <a href="https://www.tiktok.com/@odenciofilomenabu?_r=1&_t=ZS-98dtDX3Fg8a" target="_blank" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
-        <a href="https://www.facebook.com/share/1DaBPRNUiL/" target="_blank" title="Facebook"><i class="fa-brands fa-facebook"></i></a>
-        <a href="https://www.instagram.com/odenciofilomenabuqu?igsh=Nmowb2IyNWk4aXpl" target="_blank" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
-        <a href="https://wa.me/qr/DJSC2R2MUJ5AF1" target="_blank" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
-        <a href="mailto:odencmaculuve@gmail.com" title="E-mail"><i class="fa-solid fa-envelope"></i></a>
-      </div>
-            <div class="footer-year" id="footerYear"></div>
-
-      <div class="newsletter-box reveal">
+<div class="newsletter-box reveal">
         <h3>Não percas nenhuma novidade</h3>
         <p>Deixa o teu e-mail para saberes quando eu publicar algo novo.</p>
         <form id="newsletterForm" class="newsletter-form-row">
@@ -326,6 +346,15 @@
         <div class="newsletter-msg" id="newsletterMsg"></div>
       </div>
 
+      <div class="footer-label">Contactar-me através de:</div>
+      <div class="footer-icons" id="footerIcons">
+        <a href="https://www.tiktok.com/@odenciofilomenabu?_r=1&_t=ZS-98dtDX3Fg8a" target="_blank" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+        <a href="https://www.facebook.com/share/1DaBPRNUiL/" target="_blank" title="Facebook"><i class="fa-brands fa-facebook"></i></a>
+        <a href="https://www.instagram.com/odenciofilomenabuqu?igsh=Nmowb2IyNWk4aXpl" target="_blank" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+        <a href="https://wa.me/qr/DJSC2R2MUJ5AF1" target="_blank" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+        <a href="mailto:odencmaculuve@gmail.com" title="E-mail"><i class="fa-solid fa-envelope"></i></a>
+      </div>
+            <div class="footer-year" id="footerYear"></div>
     </div>
   </div>
 
@@ -398,6 +427,13 @@
       return div.innerHTML;
     }
 
+    function normalizarUrl(url) {
+      if (!url) return '#';
+      const u = url.trim();
+      if (/^(https?:|mailto:|tel:)/i.test(u)) return u;
+      return 'https://' + u;
+    }
+
     async function carregarProjetos() {
       const grid = document.getElementById('projectsGrid');
       try {
@@ -421,39 +457,55 @@
 
           const imagensExtra = Array.isArray(p.imagens) && p.imagens.length > 0
             ? `<div class="project-gallery">${p.imagens.map(url =>
-                `<img src="${escapeHtml(url)}" alt="${escapeHtml(p.titulo)}" onclick="window.open('${url}', '_blank')">`
+                `<img src="${escapeHtml(url)}" alt="${escapeHtml(p.titulo)}" onclick="window.open('${normalizarUrl(url)}', '_blank')">`
               ).join('')}</div>`
             : '';
 
           const links = Array.isArray(p.links) && p.links.length > 0
             ? `<div class="project-links">${p.links.map(l =>
-                `<a href="${escapeHtml(l.url)}" target="_blank" rel="noopener">${escapeHtml(l.nome || 'Ver mais')}</a>`
+                `<a href="${escapeHtml(normalizarUrl(l.url))}" target="_blank" rel="noopener">${escapeHtml(l.nome || 'Ver mais')}</a>`
               ).join('')}</div>`
             : '';
 
           const urlPartilha = window.location.origin + window.location.pathname + '?projeto=' + p.id;
           const shareRow = `
             <div class="share-row">
-              <button class="share-btn" title="Partilhar no WhatsApp" onclick="partilharWhatsApp('${escapeHtml(p.titulo)}', '${urlPartilha}')"><i class="fa-brands fa-whatsapp"></i></button>
+              <button class="share-btn" title="Partilhar" onclick="nativeShare('${escapeHtml(p.titulo)}', '${urlPartilha}')"><i class="fa-solid fa-share-nodes"></i></button>
               <button class="share-btn" title="Copiar link" onclick="copiarLink('${urlPartilha}', this)"><i class="fa-solid fa-link"></i></button>
             </div>`;
+
+          const descId = 'desc-' + p.id;
 
           return `
             <div class="project-card fade-in-item">
               ${capa}
               <div class="project-body">
                 <div class="project-title">${escapeHtml(p.titulo)}</div>
-                <div class="project-desc">${escapeHtml(p.descricao)}</div>
+                <div class="project-desc truncate" id="${descId}">${escapeHtml(p.descricao)}</div>
+                <button class="ver-mais-btn" onclick="alternarVerMais('${descId}', this)">Ver mais</button>
                 ${imagensExtra}
                 ${links}
                 ${shareRow}
               </div>
             </div>`;
         }).join('');
+
+        // esconde "ver mais" nos textos que já cabem sem corte
+        document.querySelectorAll('.project-desc.truncate').forEach(el => {
+          if (el.scrollHeight <= el.clientHeight + 4) {
+            el.nextElementSibling.style.display = 'none';
+          }
+        });
       } catch (err) {
         console.error(err);
         grid.innerHTML = '<div class="empty-state">Não foi possível carregar os projetos agora. Tente novamente mais tarde.</div>';
       }
+    }
+
+    function alternarVerMais(id, btn) {
+      const el = document.getElementById(id);
+      const aberto = el.classList.toggle('expanded');
+      btn.textContent = aberto ? 'Ver menos' : 'Ver mais';
     }
 
     carregarProjetos();
