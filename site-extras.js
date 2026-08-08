@@ -66,8 +66,7 @@ function initNewsletterForm() {
 
     try {
       const { error } = await window.supabaseClient
-        .from('newsletter')
-        .insert([{ email }]);
+        .rpc('inscrever_newsletter', { p_email: email });
 
       if (error) {
         if (error.code === '23505' || (error.message || '').toLowerCase().includes('duplicate')) {

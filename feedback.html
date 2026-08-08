@@ -710,12 +710,12 @@
       feedbackMsg.className = 'feedback-msg';
 
       try {
-        const payload = { nome, mensagem };
-        if (estrelaSelecionada > 0) payload.estrelas = estrelaSelecionada;
-
         const { error } = await window.supabaseClient
-          .from('feedback')
-          .insert([payload]);
+          .rpc('enviar_feedback', {
+            p_nome: nome,
+            p_mensagem: mensagem,
+            p_estrelas: estrelaSelecionada > 0 ? estrelaSelecionada : null
+          });
 
         if (error) throw error;
 
