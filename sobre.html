@@ -70,8 +70,31 @@
 
   .top-menu {
     display:flex;
-    align-items:flex-start;
+    align-items:center;
+    gap: clamp(10px, 2vw, 26px);
+    flex-wrap: wrap;
+    justify-content:flex-end;
   }
+
+  .quick-nav {
+    display:flex;
+    align-items:center;
+    gap: clamp(10px, 1.6vw, 20px);
+    flex-wrap: wrap;
+    justify-content:flex-end;
+  }
+
+  .quick-nav a {
+    font-size: clamp(10px, 1vw, 12.5px);
+    letter-spacing:0.4px;
+    color:#9fa0a4;
+    text-decoration:none;
+    font-weight:500;
+    white-space:nowrap;
+    transition: color .2s ease;
+  }
+  .quick-nav a:hover { color:#ffffff; }
+  .quick-nav a.active { color:#ffffff; }
 
   /* Hamburger menu */
   .menu-wrap {
@@ -296,6 +319,8 @@
   .dashnav span:first-child { background:#e6e6e6; width:34px; }
 
   @media (max-width: 760px) {
+    .quick-nav a { font-size: 10px; }
+    .quick-nav { gap: 8px; }
     .card {
       grid-template-columns: 1fr;
       grid-template-rows: auto auto auto;
@@ -329,6 +354,13 @@
   <div class="card">
     <div class="header">
       <div class="top-menu">
+        <nav class="quick-nav">
+          <a href="index.html">Home</a>
+          <a href="publicacoes.html">Publicações</a>
+          <a href="projetos.html">Projetos</a>
+          <a href="contactos.html">Contactos</a>
+        </nav>
+
         <div class="menu-wrap" id="menuWrap">
           <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false">
             <span></span><span></span><span></span>
@@ -360,17 +392,7 @@
     </div>
 
     <div class="footer">
-<div class="newsletter-box reveal">
-        <h3>Não percas nenhuma novidade</h3>
-        <p>Deixa o teu e-mail para saberes quando eu publicar algo novo.</p>
-        <form id="newsletterForm" class="newsletter-form-row">
-          <input type="email" id="newsletterEmail" placeholder="O teu e-mail" required>
-          <button type="submit" id="newsletterBtn">Inscrever</button>
-        </form>
-        <div class="newsletter-msg" id="newsletterMsg"></div>
-      </div>
-
-      <div class="footer-label">Contactar-me através de:</div>
+<div class="footer-label">Contactar-me através de:</div>
       <div class="footer-icons" id="footerIcons">
         <a href="https://www.tiktok.com/@odenciofilomenabu?_r=1&_t=ZS-98dtDX3Fg8a" target="_blank" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
         <a href="https://www.facebook.com/share/1DaBPRNUiL/" target="_blank" title="Facebook"><i class="fa-brands fa-facebook"></i></a>

@@ -46,7 +46,33 @@
     border:1px solid #3a3b40;
   }
 
-  .top-menu { display:flex; align-items:flex-start; }
+  .top-menu {
+    display:flex;
+    align-items:center;
+    gap: clamp(10px, 2vw, 26px);
+    flex-wrap: wrap;
+    justify-content:flex-end;
+  }
+
+  .quick-nav {
+    display:flex;
+    align-items:center;
+    gap: clamp(10px, 1.6vw, 20px);
+    flex-wrap: wrap;
+    justify-content:flex-end;
+  }
+
+  .quick-nav a {
+    font-size: clamp(10px, 1vw, 12.5px);
+    letter-spacing:0.4px;
+    color:#9fa0a4;
+    text-decoration:none;
+    font-weight:500;
+    white-space:nowrap;
+    transition: color .2s ease;
+  }
+  .quick-nav a:hover { color:#ffffff; }
+  .quick-nav a.active { color:#ffffff; }
   .menu-wrap { position: relative; display:flex; align-items:center; }
 
   .menu-toggle {
@@ -194,6 +220,60 @@
   }
 
   /* ---------- Formulário ---------- */
+  /* ---------- Seletor de estrelas (formulário) ---------- */
+  .estrela-picker {
+    display:flex;
+    gap:6px;
+    margin-bottom:12px;
+    font-size:20px;
+  }
+  .estrela-picker i {
+    color:#3a3b40;
+    cursor:pointer;
+    transition: color .15s ease, transform .15s ease;
+  }
+  .estrela-picker i:hover { transform: scale(1.15); }
+  .estrela-picker i.selecionada { color:#e0c785; }
+
+  /* ---------- Estrelas exibidas num cartão de feedback ---------- */
+  .fb-stars {
+    display:flex;
+    gap:2px;
+    font-size:11px;
+    color:#3a3b40;
+  }
+  .fb-stars i.filled { color:#e0c785; }
+
+  /* ---------- Média geral ---------- */
+  .media-estrelas {
+    text-align:center;
+    margin: 18px 0 28px;
+    padding: 18px;
+    background:#17181b;
+    border:1px solid #2a2b2f;
+    border-radius:10px;
+    max-width: 320px;
+  }
+  .media-estrelas-valor {
+    font-size:28px;
+    font-weight:800;
+    color:#f2f2f2;
+    margin-bottom:6px;
+  }
+  .media-estrelas-icones {
+    display:flex;
+    justify-content:center;
+    gap:4px;
+    font-size:16px;
+    color:#3a3b40;
+    margin-bottom:6px;
+  }
+  .media-estrelas-icones i.filled { color:#e0c785; }
+  .media-estrelas-total {
+    font-size:11px;
+    color:#6f7075;
+  }
+
   .feedback-form {
     margin-top: clamp(36px, 5vh, 52px);
     max-width: 480px;
@@ -252,6 +332,8 @@
   .footer-year { font-size:11px; letter-spacing:1px; color:#5f6065; font-weight:400; }
 
   @media (max-width: 760px) {
+    .quick-nav a { font-size: 10px; }
+    .quick-nav { gap: 8px; }
     .card { padding: 24px 24px; }
     .menu-dropdown { right:0; left:auto; }
     .avatar { display:block; }
@@ -279,6 +361,13 @@
   <div class="card">
     <div class="header">
       <div class="top-menu">
+        <nav class="quick-nav">
+          <a href="index.html">Home</a>
+          <a href="publicacoes.html">Publicações</a>
+          <a href="projetos.html">Projetos</a>
+          <a href="contactos.html">Contactos</a>
+        </nav>
+
         <div class="menu-wrap" id="menuWrap">
           <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false">
             <span></span><span></span><span></span>
@@ -319,10 +408,23 @@
         <button class="btn-vermais" id="verMaisBtn">Ver mais</button>
       </div>
 
+      <div class="media-estrelas" id="mediaEstrelas" style="display:none;">
+        <div class="media-estrelas-valor" id="mediaEstrelasValor"></div>
+        <div class="media-estrelas-icones" id="mediaEstrelasIcones"></div>
+        <div class="media-estrelas-total" id="mediaEstrelasTotal"></div>
+      </div>
+
       <div class="feedback-form">
         <h2>Deixe o seu feedback</h2>
         <form id="feedbackForm">
           <input type="text" id="feedbackNome" placeholder="O seu nome" required maxlength="80">
+          <div class="estrela-picker" id="estrelaPicker">
+            <i class="fa-solid fa-star" data-valor="1"></i>
+            <i class="fa-solid fa-star" data-valor="2"></i>
+            <i class="fa-solid fa-star" data-valor="3"></i>
+            <i class="fa-solid fa-star" data-valor="4"></i>
+            <i class="fa-solid fa-star" data-valor="5"></i>
+          </div>
           <textarea id="feedbackMensagem" placeholder="A sua mensagem" required maxlength="1000"></textarea>
           <button type="submit" id="feedbackBtn">Enviar</button>
           <div class="feedback-msg" id="feedbackMsg"></div>
@@ -429,10 +531,21 @@
     let grupoAtual = 0;
     let timerCarrossel = null;
 
+    function starsHtml(nota) {
+      if (!nota) return '';
+      let html = '<div class="fb-stars">';
+      for (let i = 1; i <= 5; i++) {
+        html += `<i class="fa-solid fa-star ${i <= nota ? 'filled' : ''}"></i>`;
+      }
+      html += '</div>';
+      return html;
+    }
+
     function cardHtml(f) {
       return `
         <div class="fb-card">
           <div class="fb-name">${escapeHtml(f.nome)}</div>
+          ${starsHtml(f.estrelas)}
           <div class="fb-date">${formatarData(f.criado_em)}</div>
           <div class="fb-msg">${escapeHtml(f.mensagem)}</div>
         </div>`;
@@ -479,7 +592,7 @@
       try {
         const { data, error } = await window.supabaseClient
           .from('feedback')
-          .select('nome, mensagem, criado_em')
+          .select('nome, mensagem, criado_em, estrelas')
           .eq('aprovado', true)
           .order('criado_em', { ascending: false });
 
@@ -501,10 +614,32 @@
         iniciarRotacao();
 
         document.getElementById('verMaisBtn').style.display = todosFeedbacks.length > 4 ? 'inline-block' : 'none';
+
+        renderMediaEstrelas();
       } catch (err) {
         console.error(err);
         track.innerHTML = '<div class="empty-state">Não foi possível carregar os feedbacks agora.</div>';
       }
+    }
+
+    function renderMediaEstrelas() {
+      const comNota = todosFeedbacks.filter(f => f.estrelas);
+      if (comNota.length === 0) return;
+
+      const media = comNota.reduce((soma, f) => soma + f.estrelas, 0) / comNota.length;
+      const mediaArredondada = Math.round(media * 10) / 10;
+
+      document.getElementById('mediaEstrelasValor').textContent = mediaArredondada.toFixed(1);
+
+      let iconesHtml = '';
+      for (let i = 1; i <= 5; i++) {
+        iconesHtml += `<i class="fa-solid fa-star ${i <= Math.round(media) ? 'filled' : ''}"></i>`;
+      }
+      document.getElementById('mediaEstrelasIcones').innerHTML = iconesHtml;
+      document.getElementById('mediaEstrelasTotal').textContent =
+        comNota.length === 1 ? 'com base em 1 avaliação' : `com base em ${comNota.length} avaliações`;
+
+      document.getElementById('mediaEstrelas').style.display = 'block';
     }
 
     carregarFeedbacks();
@@ -516,6 +651,7 @@
       body.innerHTML = todosFeedbacks.map(f => `
         <div class="fb-card" style="border:none; border-bottom:1px solid #2a2b2f; border-radius:0; padding:12px 0;">
           <div class="fb-name">${escapeHtml(f.nome)}</div>
+          ${starsHtml(f.estrelas)}
           <div class="fb-date">${formatarData(f.criado_em)}</div>
           <div class="fb-msg">${escapeHtml(f.mensagem)}</div>
         </div>
@@ -536,6 +672,27 @@
     });
 
     // ============================================================
+    // SELETOR DE ESTRELAS (formulário)
+    // ============================================================
+    let estrelaSelecionada = 0;
+    const estrelaIcones = document.querySelectorAll('#estrelaPicker i');
+
+    function pintarEstrelas(ate) {
+      estrelaIcones.forEach(icon => {
+        icon.classList.toggle('selecionada', parseInt(icon.dataset.valor) <= ate);
+      });
+    }
+
+    estrelaIcones.forEach(icon => {
+      icon.addEventListener('click', () => {
+        estrelaSelecionada = parseInt(icon.dataset.valor);
+        pintarEstrelas(estrelaSelecionada);
+      });
+      icon.addEventListener('mouseenter', () => pintarEstrelas(parseInt(icon.dataset.valor)));
+      icon.addEventListener('mouseleave', () => pintarEstrelas(estrelaSelecionada));
+    });
+
+    // ============================================================
     // ENVIO DE FEEDBACK
     // ============================================================
     const feedbackForm = document.getElementById('feedbackForm');
@@ -553,15 +710,20 @@
       feedbackMsg.className = 'feedback-msg';
 
       try {
+        const payload = { nome, mensagem };
+        if (estrelaSelecionada > 0) payload.estrelas = estrelaSelecionada;
+
         const { error } = await window.supabaseClient
           .from('feedback')
-          .insert([{ nome, mensagem }]);
+          .insert([payload]);
 
         if (error) throw error;
 
         feedbackMsg.textContent = 'Obrigado! O seu feedback foi enviado e será revisto antes de aparecer no site.';
         feedbackMsg.className = 'feedback-msg ok';
         feedbackForm.reset();
+        estrelaSelecionada = 0;
+        pintarEstrelas(0);
       } catch (err) {
         // Mensagem detalhada temporária, para diagnosticar a causa exata
         feedbackMsg.textContent = 'Erro ao enviar: ' + (err.message || JSON.stringify(err));

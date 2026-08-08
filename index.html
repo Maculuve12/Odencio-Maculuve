@@ -199,6 +199,77 @@
   }
   .hero-location i { color:#7a7b80; font-size:11px; }
 
+  /* ---------- Explorar (cartões para as outras páginas) ---------- */
+  .explore-section {
+    padding-top: clamp(30px, 5vh, 50px);
+    padding-bottom: clamp(10px, 2vh, 20px);
+  }
+
+  .explore-title {
+    font-size: clamp(11px, 1vw, 12.5px);
+    letter-spacing:2px;
+    color:#8b8c91;
+    font-weight:600;
+    margin-bottom: 20px;
+    text-transform:uppercase;
+  }
+
+  .explore-grid {
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: clamp(12px, 1.6vw, 18px);
+  }
+
+  .explore-card {
+    background:#17181b;
+    border:1px solid #2a2b2f;
+    border-radius:10px;
+    padding: 20px 18px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    text-decoration:none;
+    transition: border-color .2s ease, transform .2s ease, background .2s ease;
+  }
+  .explore-card:hover {
+    border-color:#3a3b40;
+    background:#1c1d20;
+    transform: translateY(-3px);
+  }
+
+  .explore-card-icon {
+    width:36px; height:36px;
+    border-radius:50%;
+    background:#1e1f23;
+    border:1px solid #2a2b2f;
+    display:flex; align-items:center; justify-content:center;
+    color:#c7c8ca;
+    font-size:14px;
+  }
+
+  .explore-card-title {
+    font-size:14px;
+    font-weight:700;
+    color:#f0f0f1;
+  }
+
+  .explore-card-desc {
+    font-size:11.5px;
+    line-height:1.6;
+    color:#8b8c91;
+    flex:1;
+  }
+
+  .explore-card-cta {
+    font-size:11px;
+    font-weight:600;
+    color:#c7c8ca;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .explore-card:hover .explore-card-cta { color:#ffffff; }
+
   /* ---------- Footer ---------- */
   .footer {
     display:flex;
@@ -317,6 +388,42 @@
           <i class="fa-solid fa-location-dot"></i>
           <span id="heroLocationText"></span>
         </div>
+      </div>
+    </div>
+
+    <div class="explore-section reveal">
+      <div class="explore-title">Explorar</div>
+      <div class="explore-grid">
+        <a class="explore-card" href="sobre.html">
+          <div class="explore-card-icon"><i class="fa-solid fa-user"></i></div>
+          <div class="explore-card-title">Sobre mim</div>
+          <div class="explore-card-desc">Conhece a minha jornada, formação e visão.</div>
+          <div class="explore-card-cta">Ver página <i class="fa-solid fa-arrow-right"></i></div>
+        </a>
+        <a class="explore-card" href="projetos.html">
+          <div class="explore-card-icon"><i class="fa-solid fa-diagram-project"></i></div>
+          <div class="explore-card-title">Projetos</div>
+          <div class="explore-card-desc">ROYALTY e outras iniciativas da Maculuve Investment.</div>
+          <div class="explore-card-cta">Ver página <i class="fa-solid fa-arrow-right"></i></div>
+        </a>
+        <a class="explore-card" href="publicacoes.html">
+          <div class="explore-card-icon"><i class="fa-solid fa-newspaper"></i></div>
+          <div class="explore-card-title">Publicações</div>
+          <div class="explore-card-desc">Últimas novidades e reflexões.</div>
+          <div class="explore-card-cta">Ver página <i class="fa-solid fa-arrow-right"></i></div>
+        </a>
+        <a class="explore-card" href="contactos.html">
+          <div class="explore-card-icon"><i class="fa-solid fa-address-book"></i></div>
+          <div class="explore-card-title">Contactos</div>
+          <div class="explore-card-desc">Fala comigo diretamente pelas redes sociais.</div>
+          <div class="explore-card-cta">Ver página <i class="fa-solid fa-arrow-right"></i></div>
+        </a>
+        <a class="explore-card" href="feedback.html">
+          <div class="explore-card-icon"><i class="fa-solid fa-star"></i></div>
+          <div class="explore-card-title">Feedback</div>
+          <div class="explore-card-desc">O que dizem as pessoas que já trabalharam comigo.</div>
+          <div class="explore-card-cta">Ver página <i class="fa-solid fa-arrow-right"></i></div>
+        </a>
       </div>
     </div>
 

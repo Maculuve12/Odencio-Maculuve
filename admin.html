@@ -888,7 +888,7 @@
           <div class="list-item-head">
             <div>
               <div class="list-item-title">${escapeHtml(f.nome)} ${f.aprovado ? '<span style="color:#7fd18a; font-size:10.5px; font-weight:600;">· publicado</span>' : '<span style="color:#e0c785; font-size:10.5px; font-weight:600;">· por aprovar</span>'}</div>
-              <div class="list-item-sub">${new Date(f.criado_em).toLocaleString('pt-BR')}</div>
+              <div class="list-item-sub">${new Date(f.criado_em).toLocaleString('pt-BR')} ${f.estrelas ? '· ' + '★'.repeat(f.estrelas) + '☆'.repeat(5 - f.estrelas) : ''}</div>
             </div>
             <div class="list-item-actions">
               <button class="icon-btn" onclick="toggleFeedbackAprovado('${f.id}', ${!f.aprovado})" title="${f.aprovado ? 'Remover do site' : 'Aprovar e publicar'}">
